@@ -1,5 +1,7 @@
 import { MoveRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CardEvent } from "@/components/card-event";
+import Footer from "@/components/footer";
 
 export default function Home() {
   return (
@@ -204,6 +206,92 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <div className="w-full min-h-screen flex flex-col gap-8 font-sans dark:bg-black px-20">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">Event Hightlight</h1>
+          <p className="flex items-center gap-2 text-primary-blue">
+            Lihat Semua Event <MoveRight />
+          </p>
+        </div>
+        <div className="grid grid-cols-3 gap-6">
+          <CardEvent
+            status="ongoing"
+            imgSrc="https://avatar.vercel.sh/shadcn1"
+            date="18 April 2025"
+            category="Olahraga"
+            title="PHBN 2025"
+            description="Hari Besar Nasional, event kemerdekaan SMK Bhakti Wiyata & SMK TI Pelita Nusantara"
+            link="https://example.com/event1"
+          />
+          <CardEvent
+            status="ongoing"
+            imgSrc="https://avatar.vercel.sh/shadcn1"
+            date="18 April 2025"
+            category="Olahraga"
+            title="PHBN 2025"
+            description="Hari Besar Nasional, event kemerdekaan SMK Bhakti Wiyata & SMK TI Pelita Nusantara"
+            link="https://example.com/event1"
+          />
+          <CardEvent
+            status="ongoing"
+            imgSrc="https://avatar.vercel.sh/shadcn1"
+            date="18 April 2025"
+            category="Olahraga"
+            title="PHBN 2025"
+            description="Hari Besar Nasional, event kemerdekaan SMK Bhakti Wiyata & SMK TI Pelita Nusantara"
+            link="https://example.com/event1"
+          />
+          <CardEvent
+            status="ongoing"
+            imgSrc="https://avatar.vercel.sh/shadcn1"
+            date="18 April 2025"
+            category="Olahraga"
+            title="PHBN 2025"
+            description="Hari Besar Nasional, event kemerdekaan SMK Bhakti Wiyata & SMK TI Pelita Nusantara"
+            link="https://example.com/event1"
+          />
+          <CardEvent
+            status="ongoing"
+            imgSrc="https://avatar.vercel.sh/shadcn1"
+            date="18 April 2025"
+            category="Olahraga"
+            title="PHBN 2025"
+            description="Hari Besar Nasional, event kemerdekaan SMK Bhakti Wiyata & SMK TI Pelita Nusantara"
+            link="https://example.com/event1"
+          />
+          <CardEvent
+            status="ongoing"
+            imgSrc="https://avatar.vercel.sh/shadcn1"
+            date="18 April 2025"
+            category="Olahraga"
+            title="PHBN 2025"
+            description="Hari Besar Nasional, event kemerdekaan SMK Bhakti Wiyata & SMK TI Pelita Nusantara"
+            link="https://example.com/event1"
+          />
+        </div>
+      </div>
+      <div className="w-full h-auto gap-8 dark:bg-black px-20 mt-20">
+        <div className="w-full h-full flex flex-col items-center justify-between bg-[#F1F2F3] rounded-3xl p-10 gap-6">
+          <div className="flex flex-col items-center gap-4">
+            <p className="opacity-50 text-sm">Pesan Ketua OSIS</p>
+            <img
+              src="https://avatar.vercel.sh/shadcn1"
+              alt="Ketua OSIS"
+              className="w-24 h-24 rounded-full"
+            />
+          </div>
+          <h3 className="text-center text-md font-medium max-w-xl">
+            Saya berharap OSIS Bhakti Wiyata & TI Pelita Nusantara dapat
+            mengerjakan seluruh visi misi dari OSIS yang sudah di buat diawal
+            dengan efisien dan objektif.
+          </h3>
+          <div className="text-center">
+            <p className="font-bold text-lg">Fasterino Rafael V.</p>
+            <p className="opacity-50 text-sm">Ketua OSIS Periode 2025-2026</p>
+          </div>
+        </div>
+      </div>
+      <Footer />
     </>
   );
 }
