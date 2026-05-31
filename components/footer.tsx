@@ -7,7 +7,7 @@ const outfit = Outfit({
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient w-full h-full text-white p-8 px-20 mt-16">
+    <footer className="fixed bottom-0 bg-gradient w-full h-auto text-white p-8 px-20 mt-16">
       <div className="flex gap-24 justify-between">
         <div className="flex flex-col w-[30%]">
           <div className="flex items-center gap-2">

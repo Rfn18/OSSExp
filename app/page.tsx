@@ -1,7 +1,6 @@
 import { MoveRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardEvent } from "@/components/card-event";
-import Footer from "@/components/footer";
 
 export default function Home() {
   return (
@@ -9,7 +8,7 @@ export default function Home() {
       <div className="w-full min-h-full  flex flex-1 items-center justify-between font-sans dark:bg-black px-20">
         <div className="flex flex-col gap-8 max-w-xl">
           <div className="flex flex-col gap-8">
-            <h1 className="text-5xl font-bold">
+            <h1 className="text-4xl lg:text-5xl font-bold">
               Mudah lihat dan <br /> cari{" "}
               <span className="relative inline-block">
                 <span className="absolute bottom-2 left-0 -z-10 h-4 w-full -rotate-1  bg-yellow-400"></span>
@@ -18,7 +17,7 @@ export default function Home() {
               <br />
               event OSIS
             </h1>
-            <h2 className="text-xl opacity-50">
+            <h2 className="text-lg lg:text-xl opacity-50">
               Cari dokumentasi terbaru dan terbaik dari event organisasi kami,
               kepoin kami juga. Don’t Forget To Remindss.
             </h2>
@@ -55,7 +54,7 @@ export default function Home() {
               Bersahaja
             </span>
           </h1>
-          <p className="text-lg/loose opacity-50">
+          <p className="text-base font-normal leading-relaxed max-w-prose">
             Organisasi Siswa Intra Sekolah (OSIS) adalah wadah resmi bagi siswa
             untuk berorganisasi, berkreasi, dan menyelenggarakan kegiatan yang
             memperkaya pengalaman belajar di sekolah. seluruh program kerja OSIS
@@ -291,7 +290,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <Footer />
+      
     </>
   );
 }
