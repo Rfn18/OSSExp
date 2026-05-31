@@ -2,6 +2,7 @@
 
 import { Outfit } from "next/font/google";
 import { Button } from "./ui/button";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const outfit = Outfit({
@@ -33,24 +34,36 @@ export default function Headers() {
     >
       <div className="flex items-center gap-2">
         <img src="icon.svg" alt="Icon" width="40" height="40" />
-        <p className={`${outfit.className} text-2xl font-bold text-gradient`}>
+        <Link
+          className={`${outfit.className} text-2xl font-bold text-gradient`}
+          href="/"
+        >
           OSSEXP
-        </p>
+        </Link>
       </div>
 
       <div className="flex items-center gap-8 text-sm font-medium text-zinc-900 dark:text-white">
         <p className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200">
           About OSS67
         </p>
-        <p className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200">
+        <Link
+          className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+          href="/event"
+        >
           Events
-        </p>
-        <p className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200">
+        </Link>
+        <Link
+          className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+          href="/calendar"
+        >
           Calendar
-        </p>
-        <p className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200">
+        </Link>
+        <Link
+          className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+          href="/feedback"
+        >
           Feedback
-        </p>
+        </Link>
       </div>
 
       <div className="flex items-center text-sm gap-2">

@@ -34,8 +34,8 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col items-center">
         <Headers />
         {children}
+        <Footer />
       </body>
-      <Footer />
     </html>
   );
 }
