@@ -41,6 +41,7 @@
   --color-card: var(--card);
   --color-gradient: var(--bg-gradient);
   --color-primary-blue: var(--text-primary-blue);
+  --color-drive-gradient: var(--drive-gradient);
   --color-alert: var(--alert);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -86,6 +87,7 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --bg-gradient: linear-gradient(90deg, #003399 35%, #243061 100%);
+  --drive-gradient: linear-gradient(90deg, #4688f4 0%, #ffd04b 50%, #4688f4 100%);
   --text-primary-blue: #233164;
 }
 
@@ -123,6 +125,12 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   --bg-gradient: linear-gradient(90deg, #003399 35%, #243061 100%);
+  --drive-gradient: linear-gradient(
+    90deg,
+    #4688f4 0%,
+    #ffd04b 50%,
+    #4688f4 100%
+  );
 }
 
 @layer base {
@@ -137,8 +145,13 @@
   }
 }
 
+
 @utility bg-gradient {
   background-image: var(--bg-gradient);
+}
+
+@utility bg-drive-gradient {
+  background-image: var(--drive-gradient);
 }
 
 @utility text-gradient {

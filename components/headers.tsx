@@ -33,7 +33,7 @@ export default function Headers() {
       }`}
     >
       <div className="flex items-center gap-2">
-        <img src="icon.svg" alt="Icon" width="40" height="40" />
+        <img src="/images/logo.svg" alt="Icon" width="40" height="40" />
         <Link
           className={`${outfit.className} text-2xl font-bold text-gradient`}
           href="/"

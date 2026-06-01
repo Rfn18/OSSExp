@@ -11,7 +11,7 @@ export default function Footer() {
       <div className="flex gap-24 justify-between">
         <div className="flex flex-col w-[30%]">
           <div className="flex items-center gap-2">
-            <img src="icon.svg" alt="Icon" width="40" height="40" />
+            <img src="/images/logo.svg" alt="Icon" width="40" height="40" />
             <p className={`${outfit.className} font-bold text-2xl`}>OSS67</p>
           </div>
           <p className="text-sm opacity-80 mt-2">
