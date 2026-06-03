@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 export default function EventDetail({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ sluq: string }>;
 }) {
   const router = useRouter();
 
@@ -101,7 +101,6 @@ export default function EventDetail({
                   alt="MPLS 2025"
                   className="w-full h-full object-cover rounded-lg"
                 />
-                {/* Mengubah col-span-2 menjadi ukuran normal */}
                 <img
                   src="https://picsum.photos/seed/mpls/400/190"
                   alt="MPLS 2025"
