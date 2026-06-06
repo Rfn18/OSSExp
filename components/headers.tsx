@@ -28,7 +28,7 @@ export default function Headers() {
     <div
       className={`sticky left-0 right-0 mx-auto z-50 flex justify-between items-center gap-8 transition-all duration-500 ease-in-out ${
         scrolled
-          ? "top-4 w-[90%] max-w-7xl rounded-full border border-zinc-200/50 bg-white/70 backdrop-blur-xl shadow-lg dark:border-zinc-800/50 dark:bg-zinc-900/70 py-3 px-8"
+          ? "top-4 w-[90%] max-w-7xl rounded-full border border-white/40 bg-white/20 backdrop-blur-sm shadow-lg dark:border-zinc-800/50 dark:bg-zinc-900/70 py-3 px-8"
           : "top-0 w-full bg-transparent border-transparent py-6 px-10"
       }`}
     >
@@ -43,9 +43,12 @@ export default function Headers() {
       </div>
 
       <div className="flex items-center gap-8 text-sm font-medium text-zinc-900 dark:text-white">
-        <p className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200">
+        <Link
+          href="/OSS67"
+          className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
+        >
           About OSS67
-        </p>
+        </Link>
         <Link
           className="cursor-pointer opacity-70 hover:opacity-100 transition-opacity duration-200"
           href="/event"
