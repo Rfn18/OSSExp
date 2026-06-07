@@ -1,3 +1,4 @@
+// src/components/card-event.tsx
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,6 +9,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { MoveRight, CalendarDays, Tag } from "lucide-react";
+
+const statusConfig = {
+  ongoing: {
+    label: "Berlangsung",
+    className:
+      "bg-emerald-500/10 text-emerald-700 border-emerald-200 dark:text-emerald-400",
+  },
+  upcoming: {
+    label: "Akan Datang",
+    className:
+      "bg-blue-500/10 text-blue-700 border-blue-200 dark:text-blue-400",
+  },
+  past: {
+    label: "Selesai",
+    className: "bg-muted text-muted-foreground border-border",
+  },
+};
 
 export function CardEvent({
   status,
@@ -17,7 +36,6 @@ export function CardEvent({
   title,
   description,
   link,
-  ...props
 }: {
   status?: "ongoing" | "upcoming" | "past";
   imgSrc?: string;
@@ -27,77 +45,70 @@ export function CardEvent({
   description?: string;
   link?: string;
 }) {
+  const s = status ? statusConfig[status] : statusConfig.past;
+
   return (
-    <Card className="relative mx-auto w-full max-w-sm pt-0">
-      <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
-      <div>
-        <CardAction className="absolute top-4 right-4 z-40">
-          <Badge variant="secondary">
-            {status === "ongoing" && "Ongoing"}
-            {status === "upcoming" && "Upcoming"}
-            {status === "past" && "Past"}
+    <Card className="group relative flex flex-col overflow-hidden rounded-2xl border border-border/60 bg-card p-0 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-border hover:shadow-xl focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+      {/* Image */}
+      <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
+        {imgSrc && (
+          <img
+            src={imgSrc}
+            alt={title ?? "Event image"}
+            loading="lazy"
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          />
+        )}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+        {status && (
+          <Badge
+            variant="outline"
+            className={`absolute left-3 top-3 backdrop-blur-md ${s.className}`}
+          >
+            <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-current" />
+            {s.label}
           </Badge>
-        </CardAction>
-        <img
-          src={imgSrc}
-          alt="Event cover"
-          className="relative z-20 aspect-video w-full object-cover brightness-60 grayscale dark:brightness-40"
-        />
+        )}
       </div>
-      <CardHeader>
-        <div className="flex items-center gap-2 text-sm">
-          <div className="bg-border flex items-center justify-center h-8 w-10 rounded-b-xl rounded-tl-xl">
-            <svg
-              width="24"
-              height="18"
-              viewBox="0 0 24 18"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-            >
-              <rect
-                width="24"
-                height="18"
-                fill="url(#pattern0_2032_478)"
-                fillOpacity="0.5"
-              />
-              <defs>
-                <pattern
-                  id="pattern0_2032_478"
-                  patternContentUnits="objectBoundingBox"
-                  width="1"
-                  height="1"
-                >
-                  <use
-                    xlinkHref="#image0_2032_478"
-                    transform="matrix(0.00833333 0 0 0.0111111 0.125 0)"
-                  />
-                </pattern>
-                <image
-                  id="image0_2032_478"
-                  width="90"
-                  height="90"
-                  preserveAspectRatio="none"
-                  xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAYAAAA4qEECAAAACXBIWXMAAAsTAAALEwEAmpwYAAABwUlEQVR4nO2csU7kQBAFK2L5hNuFT+QgO/OFwEZ79ykIEkdzQnJAsAQOpt09rpJesnryqkuWLXcwICIiIiIiIiIiX9wCT8AZ+ATaoPkE3oBH4BAt+R74l0BCC87fZfawO3mPkts32SF39lOCYdvG+R0h+pxg0LZxXiNEfyQYtG2cLwfd+enPR6VtNa+iUXQPFB2EooNQdBCKDkLRQSg6CEUHoeggFL1X0XtLd7YesCWJolE0I0XRKJqRomgUzUhRNIrme2bgD3BaMi2/VemXET1dufZUqF9G9PHKtX8V6pcRfbpy7btC/dKPjudC/TKi52W4NS+rTP0yolvxKBpFM1IUjaIZKYpmcNHZdhHzqLuObLuIqXO/O1V2EcfO/e5U2UWcOve7M+ruYlrZ706VXcTsroMhomgUzUhRNIpmpCiawUVn20XMK/tlRGfbRUwr+2VEZ9tFHFf2y4jOtos4reyXEZ1tFzGt7JcRnW0XMa/slxG9t3Rn6wFbkiiaQUR7HBu8R4j2gEFiDhh8TDBo2zgPEaIPy0Gobae5ADcEcb9T2Zfl6zKUw3Lq7OvgL8gP4GV5XITdySIiIiIiIiIiJOY/IwTqED8R3PUAAAAASUVORK5CYII="
-                />
-              </defs>
-            </svg>
-          </div>
-          <p className="text-sm text-muted-foreground w-full">
-            {date} | {category}
-          </p>
+
+      {/* Content */}
+      <CardHeader className="flex-1 space-y-3 p-5">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <CalendarDays className="h-3.5 w-3.5" aria-hidden />
+            <time>{date}</time>
+          </span>
+          <span className="h-3 w-px bg-border" aria-hidden />
+          <span className="inline-flex items-center gap-1.5">
+            <Tag className="h-3.5 w-3.5" aria-hidden />
+            {category}
+          </span>
         </div>
-        <CardTitle className="text-lg font-bold mt-2">{title}</CardTitle>
-        <CardDescription className="line-clamp-2">
+
+        <CardTitle className="line-clamp-2 text-lg font-semibold leading-snug tracking-tight transition-colors group-hover:text-primary">
+          {title}
+        </CardTitle>
+
+        <CardDescription className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
           {description}
         </CardDescription>
       </CardHeader>
-      <CardFooter>
-        <Button className="w-full" asChild>
-          <a href={link} target="_blank" rel="noopener noreferrer">
-            View Event
-          </a>
-        </Button>
+
+      <CardFooter className="p-5 pt-0">
+        <CardAction className="w-full">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="group/btn -ml-2 h-auto px-2 py-1.5 font-medium text-primary hover:bg-primary/5 hover:text-primary"
+          >
+            <a href={link} aria-label={`Lihat detail ${title}`}>
+              Lihat Event
+              <MoveRight className="ml-1.5 h-4 w-4 transition-transform duration-300 group-hover/btn:translate-x-1" />
+            </a>
+          </Button>
+        </CardAction>
       </CardFooter>
     </Card>
   );
