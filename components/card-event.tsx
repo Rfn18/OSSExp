@@ -95,7 +95,7 @@ export function CardEvent({
         </CardDescription>
       </CardHeader>
 
-      <CardFooter className="p-5 pt-0">
+      <CardFooter className="">
         <CardAction className="w-full">
           <Button
             asChild

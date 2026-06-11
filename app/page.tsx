@@ -96,7 +96,7 @@ const events = Array(6).fill({
 export default function Home() {
   return (
     <div className="w-full font-sans dark:bg-black">
-      <section className="min-h-[90vh] flex flex-col md:flex-row items-center justify-between gap-10 px-6 sm:px-12 md:px-20 py-16 md:py-0">
+      <section className="min-h-full flex flex-col md:flex-row items-center justify-between gap-10 px-6 sm:px-12 md:px-20 py-16 md:py-0">
         <div className="flex flex-col gap-7 max-w-xl w-full">
           <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
             Mudah lihat dan cari{" "}
@@ -112,35 +112,30 @@ export default function Home() {
             kepoin kami juga. Don't Forget To Reminds.
           </p>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <Button className="bg-gradient text-white font-bold flex items-center gap-2 rounded-full px-6 h-11 text-sm shadow-sm">
-              Explore Event <MoveRight size={18} strokeWidth={2.5} />
+          <div className="flex items-center gap-4">
+            <Button className="bg-gradient text-lg text-white font-bold flex items-center gap-2 rounded-full px-6 h-12">
+              Explore Event <MoveRight size={24} strokeWidth={3} />
             </Button>
-            <Button
-              variant="outline"
-              className="font-bold flex items-center gap-2 rounded-full px-6 h-11 text-sm"
-            >
+            <Button className="text-lg bg-transparent text-foreground border border-foreground font-bold flex items-center gap-2 rounded-full px-6 h-12 ml-4">
               Tentang OSIS
             </Button>
           </div>
         </div>
-
-        {/* Right — stacked images */}
-        <div className="relative w-full max-w-md flex-shrink-0">
+        <div className="relative w-full max-w-lg">
           <img
-            src="https://picsum.photos/seed/hero1/530/300"
-            alt="Hero"
-            className="relative w-full rounded-2xl shadow-lg z-10 -rotate-3 opacity-80"
+            src="https://picsum.photos/seed/picsum/530/300"
+            alt="Hero Image"
+            className="relative w-full max-w-md mt-8 rounded-3xl z-1 shadow-lg ml-6 -rotate-6"
           />
           <img
-            src="https://picsum.photos/seed/hero2/530/300"
-            alt="Hero"
-            className="relative w-full rounded-2xl shadow-xl z-20 mt-[-40%]"
+            src="https://picsum.photos/seed/picsum/530/300"
+            alt="Hero Image"
+            className="relative w-full max-w-md rounded-3xl z-10 shadow-lg mt-0"
           />
         </div>
       </section>
 
-      <div className="w-full min-h-screen flex flex-1 items-center justify-between font-sans dark:bg-black px-20">
+      <div className="w-full min-h-screen flex flex-1 items-center justify-between font-sans dark:bg-black px-20 mt-10">
         <div className="flex flex-col gap-8 max-w-xl">
           <p className="font-light text-primary-blue">SEKILAS TENTANG OSIS</p>
           <h1 className="text-4xl font-bold leading-tight">

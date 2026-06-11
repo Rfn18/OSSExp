@@ -277,6 +277,7 @@ export default function CalendarPage() {
                     {event.date.getDate()}
                   </span>
                 </div>
+                
                 <div className="flex flex-col overflow-hidden">
                   <span className="text-sm font-semibold text-gray-800 truncate">
                     {event.name}

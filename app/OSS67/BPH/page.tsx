@@ -129,7 +129,7 @@ export default function SekbidPage() {
 
   return (
     <div className={`${outfit.className} min-h-screen bg-white`}>
-      <div className="max-w-5xl mx-auto px-5 sm:px-8 md:px-12 py-14">
+      <div className="max-w-full px-5 pt-2 sm:px-8 md:px-12 py-14">
         <div className="flex flex-col items-center text-center gap-2 mb-12">
           <span className="inline-flex items-center gap-2 text-sm font-semibold tracking-widest uppercase rounded-full px-4">
             OSIS

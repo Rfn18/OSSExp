@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogleDrive } from "@fortawesome/free-brands-svg-icons";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
-import { Dot, MoveLeft, MoveRight } from "lucide-react";
+import { MoveLeft, MoveRight, Radio } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function EventDetail({
   params,
 }: {
-  params: Promise<{ sluq: string }>;
+  params: Promise<{ slug: string }>;
 }) {
   const router = useRouter();
 
@@ -22,23 +22,25 @@ export default function EventDetail({
     icon: React.ReactNode;
     title: string;
     description: string;
-  }) => {
-    return (
-      <div className="flex items-center gap-4 mb-4 mt-8">
-        <div className="flex items-center justify-center rounded-full self-start mt-1">
-          {icon}
-        </div>
-        <div className="flex flex-col gap-1">
-          <p className="font-bold">{title}</p>
-          <p className="text-sm opacity-50">{description}</p>
-        </div>
+  }) => (
+    <div className="flex items-start gap-4 py-4 border-b border-border last:border-0">
+      <div className="flex-shrink-0 h-9 w-9 rounded-xl bg-muted flex items-center justify-center text-foreground/70">
+        {icon}
       </div>
-    );
-  };
+      <div className="flex flex-col gap-0.5">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          {title}
+        </p>
+        <p className="text-sm font-medium text-foreground">{description}</p>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="w-full h-full">
-      <div className="max-w-full px-20 rounded-xl bg-background">
-        <div className="relative overflow-hidden rounded-t-xl">
+    <div className="w-full min-h-screen bg-background font-sans">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 pb-16">
+        {/* ── HERO IMAGE ── */}
+        <div className="relative overflow-hidden rounded-2xl">
           <img
             src="https://picsum.photos/seed/mpls/1440/660"
             alt="MPLS 2025"
@@ -46,94 +48,127 @@ export default function EventDetail({
             style={{ aspectRatio: "16/7" }}
           />
 
-          <p className="absolute top-8 right-10 z-100 inline-flex items-center justify-center border align-middle select-none font-sans font-medium text-center px-4 py-2 text-white text-sm font-medium rounded-full bg-white/2.5 border border-white/50 backdrop-blur-sm  hover:bg-white/30 transition-all duration-300 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-br before:from-white/60 before:via-transparent before:to-transparent before:opacity-70 before:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:bg-gradient-to-tl after:from-white/30 after:via-transparent after:to-transparent after:opacity-50 after:pointer-events-none transition antialiased">
-            <Dot /> Ongoing
-          </p>
-          <div
-            className="absolute inset-0 bg-gradient-to-t
-      from-black/80 via-black/40 to-transparent"
-          />
-          <div className="absolute bottom-0 left-0 right-0 px-10 pb-8">
-            <h3
+          {/* Status badge */}
+          <span className="absolute top-5 right-5 z-20 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-white border border-white/30 bg-white/10 backdrop-blur-md">
+            <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+            Ongoing
+          </span>
+
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent" />
+
+          {/* Bottom overlay: back + title */}
+          <div className="absolute bottom-0 left-0 right-0 px-6 sm:px-10 pb-8 pt-16">
+            <button
               onClick={() => router.back()}
-              className="flex items-center gap-2 mb-2 text-white/80 cursor-pointer"
+              className="flex items-center gap-2 mb-3 text-white/70 hover:text-white text-sm font-medium transition-colors duration-200 group"
             >
-              <MoveLeft size={24} strokeWidth={3} />
+              <MoveLeft
+                size={18}
+                strokeWidth={2.5}
+                className="group-hover:-translate-x-0.5 transition-transform duration-200"
+              />
               Kembali
-            </h3>
-            <h1 className="text-4xl m-0 font-bold text-white leading-tight tracking-tight">
+            </button>
+            <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight tracking-tight">
               MPLS 2025
             </h1>
           </div>
         </div>
-        <div className="mt-8 flex justify-between gap-12 items-start">
-          <div>
-            <div className="flex flex-col gap-4 mb-4">
-              <h3 className="font-bold text-2xl">Deskripsi</h3>
-              <p className=" text-muted-foreground leading-relaxed">
+
+        {/* ── BODY ── */}
+        <div className="mt-8 flex flex-col lg:flex-row gap-8 items-start">
+          {/* ── LEFT: main content ── */}
+          <div className="flex-1 min-w-0">
+            {/* Deskripsi */}
+            <section className="mb-8">
+              <h2 className="font-bold text-xl text-foreground mb-3">
+                Deskripsi
+              </h2>
+              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
                 Masa Pengenalan Lingkungan sekolah menghadirkan pengalaman seru,
                 mengenalkan lingkungan sekolah, membangun kebersamaan,
                 menumbuhkan disiplin, serta menginspirasi siswa baru untuk
                 beradaptasi, berkembang, dan memulai perjalanan pendidikan
-                dengan semangat percaya diri yang kuat positif{" "}
+                dengan semangat percaya diri yang kuat dan positif.
               </p>
-            </div>
-            <div className="flex flex-col gap-4 mb-4">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="font-bold text-2xl">Dokuemntasi</h3>
-                <p className="text-sm text-muted-foreground inline-flex items-center gap-1 cursor-pointer">
-                  Galery Foto <MoveRight />
-                </p>
+            </section>
+
+            {/* Dokumentasi */}
+            <section>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-bold text-xl text-foreground">
+                  Dokumentasi
+                </h2>
+                <a
+                  href="#"
+                  className="flex items-center gap-1.5 text-sm font-semibold text-primary-blue hover:gap-3 transition-all duration-200"
+                >
+                  Galeri Foto <MoveRight size={14} />
+                </a>
               </div>
-              <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+
+              {/* Photo grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <img
-                  src="https://picsum.photos/seed/mpls/400/400"
-                  alt="MPLS 2025"
-                  className="w-full h-full object-cover rounded-lg"
+                  src="https://picsum.photos/seed/mpls1/400/400"
+                  alt="Dokumentasi MPLS"
+                  className="w-full aspect-square object-cover rounded-xl hover:opacity-90 transition-opacity cursor-pointer"
                 />
                 <img
-                  src="https://picsum.photos/seed/mpls/400/400"
-                  alt="MPLS 2025"
-                  className="w-full h-full object-cover rounded-lg"
+                  src="https://picsum.photos/seed/mpls2/400/400"
+                  alt="Dokumentasi MPLS"
+                  className="w-full aspect-square object-cover rounded-xl hover:opacity-90 transition-opacity cursor-pointer"
                 />
                 <img
-                  src="https://picsum.photos/seed/mpls/400/400"
-                  alt="MPLS 2025"
-                  className="w-full h-full object-cover rounded-lg"
+                  src="https://picsum.photos/seed/mpls3/400/400"
+                  alt="Dokumentasi MPLS"
+                  className="w-full aspect-square object-cover rounded-xl hover:opacity-90 transition-opacity cursor-pointer"
                 />
                 <img
-                  src="https://picsum.photos/seed/mpls/400/190"
-                  alt="MPLS 2025"
-                  className="w-full object-cover rounded-lg col-span-1 lg:col-span-2 "
+                  src="https://picsum.photos/seed/mpls4/800/400"
+                  alt="Dokumentasi MPLS"
+                  className="w-full aspect-video object-cover rounded-xl col-span-2 hover:opacity-90 transition-opacity cursor-pointer"
                 />
                 <img
-                  src="https://picsum.photos/seed/mpls/400/400"
-                  alt="MPLS 2025"
-                  className="w-full  object-cover rounded-lg"
+                  src="https://picsum.photos/seed/mpls5/400/400"
+                  alt="Dokumentasi MPLS"
+                  className="w-full aspect-square object-cover rounded-xl hover:opacity-90 transition-opacity cursor-pointer"
                 />
               </div>
-            </div>
+            </section>
           </div>
-          <div className="sticky z-10 top-30 max-w-xl w-full">
-            <div className=" border rounded-lg p-6 bg-background/50 backdrop-blur-sm h-max ">
-              <h3 className="font-bold text-2xl mb-4">Detail Event</h3>
-              <div>
+
+          {/* ── RIGHT: sidebar ── */}
+          <div className="sticky top-24 w-full lg:w-72 flex-shrink-0">
+            {/* Detail card */}
+            <div className="rounded-2xl border border-border bg-background/80 backdrop-blur-sm shadow-sm p-5">
+              <h3 className="font-bold text-base text-foreground mb-1">
+                Detail Event
+              </h3>
+              <p className="text-xs text-muted-foreground mb-2">
+                Informasi lengkap kegiatan
+              </p>
+              <div className="mt-3">
                 <ItemCard
-                  icon={<FontAwesomeIcon icon={faCalendar} size="xl" />}
+                  icon={<FontAwesomeIcon icon={faCalendar} />}
                   title="Tanggal"
                   description="10 Agustus 2025"
                 />
               </div>
             </div>
+
+            {/* Google Drive button */}
             <Button
               variant="ghost"
-              className="w-full h-10 text-lg font-bold text-white mt-4 gap-2 rounded-lg
-             bg-drive-gradient bg-[length:200%_auto] bg-left
-             hover:bg-right hover:text-white/90 hover:cursor-pointer
-             transition-[background-position] duration-500 ease-out"
+              className="w-full h-11 font-bold text-white mt-3 gap-2 rounded-xl
+                bg-drive-gradient bg-[length:200%_auto] bg-left
+                hover:bg-right hover:text-white/90
+                transition-[background-position] duration-500 ease-out
+                shadow-sm hover:shadow-md"
             >
               <FontAwesomeIcon icon={faGoogleDrive} />
-              Google Drive
+              Buka Google Drive
             </Button>
           </div>
         </div>
