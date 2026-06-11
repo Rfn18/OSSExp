@@ -2,7 +2,6 @@ import { MoveRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardEvent } from "@/components/card-event";
 
-/* ── Reusable divider ── */
 function Divider() {
   return (
     <div className="flex items-center gap-3 w-full my-2">

@@ -4,8 +4,6 @@ import "./globals.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 config.autoAddCss = false;
-import Headers from "@/components/headers";
-import Footer from "@/components/footer";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -35,9 +33,7 @@ export default function RootLayout({
       className={`${poppins.className} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-screen flex flex-col items-center">
-        <Headers />
         {children}
-        <Footer />
       </body>
     </html>
   );
