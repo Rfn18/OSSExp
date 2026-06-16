@@ -3,6 +3,7 @@ import { Poppins, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
+import { Providers } from "@/components/providers";
 config.autoAddCss = false;
 
 const poppins = Poppins({
@@ -33,7 +34,7 @@ export default function RootLayout({
       className={`${poppins.className} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-screen flex flex-col items-center">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

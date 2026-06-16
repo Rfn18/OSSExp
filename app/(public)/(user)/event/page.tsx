@@ -93,7 +93,6 @@ export default function EventPage() {
               </SelectContent>
             </Select>
 
-            {/* Select: Urutan */}
             <Select>
               <SelectTrigger className="h-9 text-sm rounded-xl w-full sm:w-36">
                 <SelectValue placeholder="Urutkan" />

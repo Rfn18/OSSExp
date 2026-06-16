@@ -5,7 +5,12 @@ import { Input } from "../ui/input";
 import { useLayout } from "@/app/context/LayoutContext";
 
 export default function Header() {
-  const { isSidebarOpen, setIsSidebarOpen } = useLayout();
+  const {
+    isSidebarLeftOpen,
+    setIsSidebarLeftOpen,
+    isSidebarRightOpen,
+    setIsSidebarRightOpen,
+  } = useLayout();
 
   return (
     <header
@@ -14,9 +19,14 @@ export default function Header() {
           border-b border-gray-200 bg-white px-4 sm:px-6 lg:px-10
           transition-all duration-300
           ${
-            isSidebarOpen
+            isSidebarLeftOpen
               ? "lg:ml-64 lg:w-[calc(100%-16rem)]"
               : "lg:ml-20 lg:w-[calc(100%-5rem)]"
+          }
+          ${
+            isSidebarRightOpen
+              ? "lg:w-[calc(100%-16rem)]"
+              : "lg:w-[calc(100%-5rem)]"
           }
      `}
     >
@@ -24,7 +34,7 @@ export default function Header() {
         <PanelRight
           size={20}
           className="text-gray-600 cursor-pointer hover:text-black transition-colors"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          onClick={() => setIsSidebarLeftOpen(!isSidebarLeftOpen)}
         />
         <div className="hidden sm:flex items-center gap-1 text-sm">
           <h1 className="text-gray-500">Dashboard</h1>
@@ -62,7 +72,11 @@ export default function Header() {
           </div>
 
           <div className="p-2 hover:bg-gray-100 transition cursor-pointer rounded-full">
-            <PanelRight size={18} className="text-gray-600" />
+            <PanelRight
+              size={18}
+              className="text-gray-600"
+              onClick={() => setIsSidebarRightOpen(!isSidebarRightOpen)}
+            />
           </div>
         </div>
       </div>

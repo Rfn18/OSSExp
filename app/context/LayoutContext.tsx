@@ -4,20 +4,30 @@ import { createContext, useContext, useState } from "react";
 
 type LayoutContextProps = {
   isMobile: boolean;
-  isSidebarOpen: boolean;
+  isSidebarLeftOpen: boolean;
+  isSidebarRightOpen: boolean;
   setIsMobile: (isMobile: boolean) => void;
-  setIsSidebarOpen: (isSidebarOpen: boolean) => void;
+  setIsSidebarLeftOpen: (isSidebarLeftOpen: boolean) => void;
+  setIsSidebarRightOpen: (isSidebarRightOpen: boolean) => void;
 };
 
 const LayoutContext = createContext<LayoutContextProps | undefined>(undefined);
 
 export const LayoutProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarLeftOpen, setIsSidebarLeftOpen] = useState(false);
+  const [isSidebarRightOpen, setIsSidebarRightOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   return (
     <LayoutContext.Provider
-      value={{ isMobile, isSidebarOpen, setIsSidebarOpen, setIsMobile }}
+      value={{
+        isMobile,
+        isSidebarLeftOpen,
+        isSidebarRightOpen,
+        setIsMobile,
+        setIsSidebarLeftOpen,
+        setIsSidebarRightOpen,
+      }}
     >
       {children}
     </LayoutContext.Provider>

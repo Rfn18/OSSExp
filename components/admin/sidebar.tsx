@@ -1,14 +1,7 @@
 "use client";
 
 import {
-  Home,
-  Users,
-  Radio,
-  CalendarClock,
-  ClockCheck,
-  DollarSign,
   ChevronDown,
-  Settings,
   ChartPie,
   Calendar,
   FileArchive,
@@ -16,33 +9,254 @@ import {
   User,
   Key,
   Bell,
+  Info,
+  FileText,
+  Settings,
+  X,
+  CheckCheck,
+  LogOut,
 } from "lucide-react";
 import { Outfit } from "next/font/google";
 import { useLayout } from "@/app/context/LayoutContext";
 import { usePathname } from "next/navigation";
-import Link from "next/link"; // Correct Link import for Next.js
-import { ReactNode, useState } from "react";
-import { User as userType } from "@/app/types/userType";
+import Link from "next/link";
+import { ReactNode, useRef, useState } from "react";
+import { User as UserType } from "@/app/types/userType";
 
 const outfit = Outfit({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
-const MOCK_USER: userType | null = {
+const EASE = {
+  out: "cubic-bezier(0.22, 1, 0.36, 1)",
+  spring: "cubic-bezier(0.34, 1.2, 0.64, 1)",
+  in: "cubic-bezier(0.55, 0, 1, 0.45)",
+} as const;
+
+const MOCK_USER: UserType | null = {
   name: "Budi Santoso",
   email: "budi@gmail.com",
   role: "Ketua OSIS",
   avatar: null,
 };
 
-export default function Sidebar() {
-  const { isSidebarOpen } = useLayout();
+const menuItems = [
+  {
+    title: "Dashboards",
+    items: [
+      {
+        name: "Overview",
+        icon: <ChartPie size={18} />,
+        href: "/admin/dashboard",
+      },
+      {
+        name: "Events",
+        icon: <Calendar size={18} />,
+        subItems: [
+          { name: "Management", href: "/admin/management-event" },
+          { name: "Approval", href: "/admin/approval-event" },
+        ],
+      },
+      {
+        name: "Documentations",
+        icon: <FileArchive size={18} />,
+        subItems: [
+          { name: "Management", href: "/admin/management-documentation" },
+          { name: "Approval", href: "/admin/approval-documentation" },
+        ],
+      },
+      {
+        name: "Categories",
+        icon: <ChartBarStacked size={18} />,
+        href: "/admin/categories",
+      },
+    ],
+  },
+  {
+    title: "Services",
+    items: [
+      { name: "User", icon: <User size={18} />, href: "/admin/user" },
+      {
+        name: "Role & Permission",
+        icon: <Key size={18} />,
+        href: "/admin/role-permission",
+      },
+      {
+        name: "Notification",
+        icon: <Bell size={18} />,
+        href: "/admin/notification",
+      },
+    ],
+  },
+];
+
+const MOCK_NOTIFS = [
+  {
+    id: 1,
+    type: "info",
+    title: "Pengumuman rapat mingguan",
+    time: "2m lalu",
+    read: false,
+  },
+  {
+    id: 2,
+    type: "event",
+    title: "Event Hari Kemerdekaan disetujui",
+    time: "1j lalu",
+    read: false,
+  },
+  {
+    id: 3,
+    type: "document",
+    title: "Dokumentasi kegiatan diunggah",
+    time: "3j lalu",
+    read: true,
+  },
+  {
+    id: 4,
+    type: "document",
+    title: "Dokumentasi kegiatan diunggah",
+    time: "3j lalu",
+    read: true,
+  },
+  {
+    id: 5,
+    type: "event",
+    title: "Event bulan depan ditambahkan",
+    time: "5j lalu",
+    read: true,
+  },
+];
+
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+function NavTooltip({
+  label,
+  show,
+  children,
+}: {
+  label: string;
+  show: boolean;
+  children: ReactNode;
+}) {
+  if (!show) return <>{children}</>;
+  return (
+    <div className="relative group/tip">
+      {children}
+      {/* Tooltip slides in from left when icon is hovered */}
+      <div
+        className="pointer-events-none absolute left-full top-1/2 ml-3 -translate-y-1/2
+          rounded-lg bg-gray-900 px-2.5 py-1.5 z-[70]
+          text-xs font-medium text-white whitespace-nowrap shadow-xl
+          opacity-0 -translate-x-1 scale-95
+          group-hover/tip:opacity-100 group-hover/tip:translate-x-0 group-hover/tip:scale-100
+          transition-[opacity,transform] duration-200"
+        style={{ transitionTimingFunction: EASE.spring }}
+      >
+        {label}
+        <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+      </div>
+    </div>
+  );
+}
+
+function ProfileAction({
+  href,
+  icon,
+  label,
+}: {
+  href: string;
+  icon: ReactNode;
+  label: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className="flex items-center gap-3 px-4 py-2.5 text-sm
+      text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors duration-150"
+    >
+      <span className="text-gray-400">{icon}</span>
+      {label}
+    </Link>
+  );
+}
+
+function UserAvatar({
+  user,
+  initials,
+  size = "sm",
+}: {
+  user: UserType;
+  initials: string;
+  size?: "sm" | "md";
+}) {
+  const sz = size === "sm" ? "w-8 h-8 text-[11px]" : "w-9 h-9 text-xs";
+  if (user.avatar) {
+    return (
+      <img
+        src={user.avatar}
+        alt={user.name}
+        className={`${sz} rounded-full object-cover shrink-0 ring-2 ring-white`}
+      />
+    );
+  }
+  return (
+    <div
+      className={`${sz} rounded-full shrink-0 flex items-center justify-center
+      font-bold text-white bg-gradient-to-br from-blue-500 to-indigo-600`}
+    >
+      {initials}
+    </div>
+  );
+}
+
+function NotifIcon({ type }: { type: string }) {
+  const base = "flex items-center justify-center w-8 h-8 rounded-lg shrink-0";
+  switch (type) {
+    case "info":
+      return (
+        <span className={`${base} bg-blue-50    text-blue-600`}>
+          <Info size={15} />
+        </span>
+      );
+    case "event":
+      return (
+        <span className={`${base} bg-violet-50  text-violet-600`}>
+          <Calendar size={15} />
+        </span>
+      );
+    case "document":
+      return (
+        <span className={`${base} bg-emerald-50 text-emerald-600`}>
+          <FileText size={15} />
+        </span>
+      );
+    default:
+      return (
+        <span className={`${base} bg-gray-100   text-gray-500`}>
+          <Bell size={15} />
+        </span>
+      );
+  }
+}
+
+export function SidebarLeft() {
+  const { isSidebarLeftOpen } = useLayout();
   const [openMenu, setOpenMenu] = useState<string | null>(null);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const pathname = usePathname();
   const user = MOCK_USER;
-  const userRole = 2;
+
+  const profileRef = useRef<HTMLDivElement>(null);
+
   const isActive = (path: string | undefined) => {
     if (!path) return false;
     return pathname === path || pathname.startsWith(`${path}/`);
@@ -55,89 +269,30 @@ export default function Sidebar() {
     return false;
   };
 
-  function getInitials(name: string) {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .slice(0, 2)
-      .toUpperCase();
-  }
-
   const initials = user ? getInitials(user.name) : "";
-
-  const menuItems = [
-    {
-      title: "Dashboards",
-      items: [
-        {
-          name: "Overview",
-          icon: <ChartPie size={20} />,
-          href: "/admin/dashboard",
-        },
-        {
-          name: "Events",
-          icon: <Calendar size={20} />,
-          subItems: [
-            { name: "Management", href: "/admin/management-event" },
-            { name: "Approval", href: "/admin/approval-event" },
-          ],
-        },
-        {
-          name: "Documentations",
-          icon: <FileArchive size={20} />,
-          subItems: [
-            { name: "Management", href: "/admin/management-documentation" },
-            { name: "Approval", href: "/admin/approval-documentation" },
-          ],
-        },
-        {
-          name: "Categories",
-          icon: <ChartBarStacked size={20} />,
-          href: "/admin/categories",
-        },
-      ],
-    },
-
-    {
-      title: "Services",
-      items: [
-        {
-          name: "User",
-          icon: <User size={20} />,
-          href: "/admin/user",
-        },
-        {
-          name: "Role & Permission",
-          icon: <Key size={20} />,
-          href: "/admin/role-permission",
-        },
-        {
-          name: "Notification",
-          icon: <Bell size={20} />,
-          href: "/admin/notification",
-        },
-      ],
-    },
-  ];
 
   return (
     <aside
       className={`
-          fixed z-40 top-0 left-0 h-full bg-white border-r border-gray-100  flex flex-col transition-all duration-300 ease-in-out
-          ${isSidebarOpen ? "w-64 translate-x-0" : "-translate-x-full"} lg:translate-x-0
-          ${isSidebarOpen ? "lg:w-64" : "lg:w-[82px]"}`}
+        fixed z-40 top-0 left-0 h-full bg-white border-r border-gray-100
+        flex flex-col transition-all duration-300 ease-in-out
+        lg:translate-x-0
+      ${
+        isSidebarLeftOpen
+          ? "w-64 translate-x-0 p-0"
+          : "-translate-x-full lg:w-[72px]"
+      }`}
     >
       <div
-        className={`h-20 flex items-center gap-2 ${isSidebarOpen ? "px-6" : "px-5"} border-b border-gray-200`}
+        className={`h-20 flex items-center gap-2 ${isSidebarLeftOpen ? "px-6" : "px-5"} border-b border-gray-200`}
       >
         <img
           src="/images/logo.svg"
           alt="Logo"
-          className={`rounded-full object-cover transition-all duration-300 ${isSidebarOpen ? "w-10 h-10" : "w-8 h-8"}`}
+          className={`rounded-full object-cover transition-all duration-300 ${isSidebarLeftOpen ? "w-10 h-10" : "w-8 h-8"}`}
         />
         <h3
-          className={`${outfit.className} text-xl font-bold text-gradient transition-opacity duration-300 ${isSidebarOpen ? "opacity-100" : "opacity-0 w-0 hidden"}`}
+          className={`${outfit.className} text-xl font-bold text-gradient transition-opacity duration-300 ${isSidebarLeftOpen ? "opacity-100" : "opacity-0 w-0 hidden"}`}
         >
           OSS67
         </h3>
@@ -147,17 +302,17 @@ export default function Sidebar() {
         <div className="flex flex-col gap-6">
           {menuItems.map((section, sectionIndex) => (
             <div key={sectionIndex}>
-              {isSidebarOpen && (
-                <h3 className="px-3 mb-2 text-sm text-gray-500/50 uppercase font-medium tracking-wider">
+              {isSidebarLeftOpen && (
+                <h3 className="px-3 mb-2 text-xs text-gray-500/50 uppercase font-medium tracking-wider">
                   {section.title}
                 </h3>
               )}
 
               <ul className="flex flex-col gap-2">
                 {section.items.map((item, index) => (
-                  <li key={index} className="min-w-max text-sm">
+                  <li key={index} className="min-w-max text-sm ">
                     {item.subItems ? (
-                      <div className="flex flex-col">
+                      <div className="flex flex-col rounded-lg">
                         <button
                           onClick={() =>
                             setOpenMenu(
@@ -166,8 +321,8 @@ export default function Sidebar() {
                           }
                           className={`flex items-center justify-between w-full p-3 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
                             isParentActive(item)
-                              ? "bg-black/5 text-blue-dark"
-                              : "text-blue-dark/60 hover:bg-background"
+                              ? "bg-gray-100 text-blue-dark"
+                              : "text-blue-dark/60 "
                           }`}
                         >
                           <div className="flex items-center gap-2">
@@ -175,7 +330,7 @@ export default function Sidebar() {
 
                             <span
                               className={`transition-opacity duration-300 whitespace-nowrap ${
-                                isSidebarOpen
+                                isSidebarLeftOpen
                                   ? "opacity-100"
                                   : "opacity-0 w-0 overflow-hidden"
                               }`}
@@ -184,7 +339,7 @@ export default function Sidebar() {
                             </span>
                           </div>
 
-                          {isSidebarOpen && (
+                          {isSidebarLeftOpen && (
                             <ChevronDown
                               size={16}
                               className={`transition-transform duration-300 shrink-0 ${
@@ -195,13 +350,13 @@ export default function Sidebar() {
                         </button>
 
                         <div
-                          className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                            openMenu === item.name && isSidebarOpen
+                          className={`overflow-hidden transition-all duration-300 ease-in-out  ${
+                            openMenu === item.name && isSidebarLeftOpen
                               ? "max-h-40 mt-2"
                               : "max-h-0"
                           }`}
                         >
-                          <ul className="ml-9 flex flex-col gap-1 border-l-2 border-primary/10 pl-2">
+                          <ul className="ml-9 flex flex-col gap-1 border-l-2 border-primary/10 pl-2 ">
                             {item.subItems.map((sub, i) => (
                               <li key={i}>
                                 <Link
@@ -209,7 +364,7 @@ export default function Sidebar() {
                                   className={`block p-2 rounded-md text-sm transition-colors ${
                                     isActive(sub.href)
                                       ? "text-primary font-semibold"
-                                      : "text-blue-dark/60 hover:text-blue-dark"
+                                      : "text-blue-dark/60 hover:bg-gray-100 hover:text-blue-dark"
                                   }`}
                                 >
                                   {sub.name}
@@ -224,17 +379,17 @@ export default function Sidebar() {
                         href={item.href || "#"}
                         className={`flex items-center rounded-lg text-sm font-medium transition-all cursor-pointer ${
                           isActive(item.href)
-                            ? "bg-black/5 text-blue-dark"
-                            : "text-blue-dark/60 hover:bg-background"
+                            ? "bg-gray-100 text-blue-dark"
+                            : "text-blue-dark/60 hover:bg-gray-100"
                         }
-                           ${isSidebarOpen ? "gap-2 p-3" : "gap-0 p-3"} 
+                           ${isSidebarLeftOpen ? "gap-2 p-3" : "gap-0 p-3"} 
                         `}
                       >
                         <span className="shrink-0">{item.icon}</span>
 
                         <span
                           className={`transition-opacity duration-300 whitespace-nowrap ${
-                            isSidebarOpen
+                            isSidebarLeftOpen
                               ? "opacity-100"
                               : "opacity-0 w-0 overflow-hidden"
                           }`}
@@ -251,164 +406,336 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <div className="p-2 border-t border-border shrink-0">
+      <div
+        ref={profileRef}
+        className="shrink-0 px-2 py-3 border-t border-gray-100 relative"
+      >
         {user && (
-          <button
-            onClick={() => setIsProfileModalOpen(true)}
-            className={`w-full cursor-pointer flex items-center gap-3 rounded-xl p-2  transition-all duration-150 text-left ${
-              !isSidebarOpen ? "justify-center" : "hover:bg-zinc-100"
-            }`}
-          >
-            <UserAvatar user={user} initials={initials} size="md" />
+          <>
+            {/* Profile popover — transition-all duration-300 (mengikuti pola referensi) */}
             <div
-              className={`min-w-0 transition-opacity duration-300 ${
-                isSidebarOpen ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
-              }`}
+              className={`absolute bottom-full left-2 right-2 mb-2
+                bg-white rounded-xl border border-gray-100 shadow-xl shadow-black/8
+                overflow-hidden z-50 transition-all duration-300 origin-bottom
+                ${
+                  profileOpen
+                    ? "opacity-100 scale-100 pointer-events-auto"
+                    : "opacity-0 scale-95 pointer-events-none"
+                }`}
             >
-              <p className="text-sm font-semibold text-zinc-900 truncate">
-                {user.name}
-              </p>
-              <p className="text-xs text-zinc-500">{user.role}</p>
+              <div
+                className="px-4 py-3.5 bg-gradient-to-br from-blue-50 to-indigo-50
+                border-b border-gray-100 flex items-center gap-3"
+              >
+                <UserAvatar user={user} initials={initials} size="md" />
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-gray-900 truncate">
+                    {user.name}
+                  </p>
+                  <p className="text-xs text-gray-500">{user.role}</p>
+                </div>
+              </div>
+              <div className="py-1">
+                <ProfileAction
+                  href="/admin/profile"
+                  icon={<User size={14} />}
+                  label="Lihat Profil"
+                />
+                <ProfileAction
+                  href="/admin/settings"
+                  icon={<Settings size={14} />}
+                  label="Pengaturan Akun"
+                />
+              </div>
+              <div className="border-t border-gray-100 py-1">
+                <button
+                  onClick={() => {}}
+                  className="flex w-full items-center gap-3 px-4 py-2.5 text-sm
+                    text-red-500 hover:bg-red-50 transition-colors duration-150"
+                >
+                  <LogOut size={14} />
+                  Keluar
+                </button>
+              </div>
             </div>
-          </button>
+
+            <NavTooltip label={user.name} show={!isSidebarLeftOpen}>
+              <button
+                onClick={() => setProfileOpen((v) => !v)}
+                className={`w-full flex items-center gap-3 p-3 rounded-xl cursor-pointer
+                  text-left transition-colors duration-150 hover:bg-gray-50
+                  ${!isSidebarLeftOpen ? "justify-center" : ""}`}
+              >
+                <UserAvatar user={user} initials={initials} size="sm" />
+                <div
+                  className={`min-w-0 flex-1 transition-opacity duration-300
+                  ${isSidebarLeftOpen ? "opacity-100" : "opacity-0 w-0 overflow-hidden"}`}
+                >
+                  <p className="text-sm font-semibold text-gray-900 truncate leading-tight">
+                    {user.name}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">{user.role}</p>
+                </div>
+                {isSidebarLeftOpen && (
+                  <ChevronDown
+                    size={14}
+                    className={`shrink-0 text-gray-400 transition-transform duration-300
+                      ${profileOpen ? "rotate-180" : ""}`}
+                  />
+                )}
+              </button>
+            </NavTooltip>
+          </>
         )}
       </div>
     </aside>
   );
 }
 
-function UserAvatar({
-  user,
-  initials,
-  size = "sm",
-}: {
-  user: userType;
-  initials: string;
-  size?: "sm" | "md";
-}) {
-  const sz = size === "sm" ? "w-8 h-8 text-[11px]" : "w-10 h-10 text-xs";
+export function SidebarRight() {
+  const { isSidebarRightOpen, setIsSidebarRightOpen } = useLayout() as any;
+  const [notifs, setNotifs] = useState(MOCK_NOTIFS);
+  const [removing, setRemoving] = useState<Set<number>>(new Set());
 
-  if (user.avatar) {
-    return (
-      <img
-        src={user.avatar}
-        alt={user.name}
-        className={`${sz} rounded-full object-cover ring-2 ring-white/20 shrink-0`}
-      />
+  const unreadCount = notifs.filter((n) => !n.read).length;
+
+  const markAllRead = () =>
+    setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
+
+  const markRead = (id: number) => {
+    setNotifs((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
     );
-  }
+  };
 
   return (
-    <div
-      className={`${sz} rounded-full shrink-0
-        bg-gradient-to-br from-blue-500 to-indigo-600
-        flex items-center justify-center
-        font-bold text-white ring-2 ring-white/20`}
-    >
-      {initials}
-    </div>
-  );
-}
-
-function DrawerItem({
-  href,
-  icon,
-  label,
-  onClick,
-}: {
-  href: string;
-  icon: ReactNode;
-  label: string;
-  onClick?: () => void;
-}) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm
-        text-zinc-600 dark:text-zinc-400
-        hover:bg-zinc-100 dark:hover:bg-zinc-800
-        hover:text-zinc-900 dark:hover:text-white
-        transition-all duration-150"
-    >
-      <span className="text-zinc-400 dark:text-zinc-500">{icon}</span>
-      {label}
-    </Link>
-  );
-}
-
-function IcUser({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5
-           7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+    <>
+      {/* ── Overlay ─────────────────────────────────────────────────────── */}
+      <div
+        onClick={() => setIsSidebarRightOpen?.(false)}
+        className="fixed inset-0 z-30 lg:hidden"
+        style={{
+          backgroundColor: isSidebarRightOpen
+            ? "rgba(0,0,0,0.28)"
+            : "rgba(0,0,0,0)",
+          backdropFilter: isSidebarRightOpen ? "blur(2px)" : "blur(0px)",
+          pointerEvents: isSidebarRightOpen ? "auto" : "none",
+          transition: `background-color 300ms ${EASE.out}, backdrop-filter 300ms ${EASE.out}`,
+        }}
       />
-    </svg>
-  );
-}
 
-function IcSettings({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94
-           l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257
-           1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0
-           01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0
-           010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43
-           l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072
-           -1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213
-           1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213
-           -1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196
-           -.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247
-           a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932
-           6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0
-           01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133
-           .751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644
-           -.869l.214-1.281z"
-      />
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-      />
-    </svg>
-  );
-}
+      {/* ── Panel ───────────────────────────────────────────────────────── */}
+      <aside
+        className="fixed z-40 top-0 right-0 h-full w-80 bg-white
+          border-l border-gray-100 flex flex-col"
+        style={{
+          // Slide from right with spring deceleration
+          transform: isSidebarRightOpen ? "translateX(0)" : "translateX(100%)",
+          boxShadow: isSidebarRightOpen
+            ? "-8px 0 40px rgba(0,0,0,0.08)"
+            : "none",
+          transition: `transform 350ms ${isSidebarRightOpen ? EASE.out : EASE.in},
+                       box-shadow 350ms ${EASE.out}`,
+        }}
+      >
+        {/* ── Notification section ──────────────────────────────────────── */}
+        <div className="flex flex-col flex-1 min-h-0">
+          {/* Header */}
+          <div
+            className="h-16 flex items-center justify-between px-5
+            border-b border-gray-100 shrink-0"
+          >
+            <div className="flex items-center gap-2.5">
+              <Bell size={16} className="text-gray-700" />
+              <h2 className="text-sm font-semibold text-gray-900">
+                Notifikasi
+              </h2>
+              {/* Badge bounces in when count changes */}
+              {unreadCount > 0 && (
+                <span
+                  className="inline-flex items-center justify-center min-w-[18px] h-[18px]
+                    px-1 rounded-full bg-blue-600 text-[10px] font-bold text-white"
+                  style={{
+                    animation:
+                      "badgePop 0.3s cubic-bezier(0.34,1.56,0.64,1) both",
+                  }}
+                >
+                  {unreadCount}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1">
+              {unreadCount > 0 && (
+                <button
+                  onClick={markAllRead}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg
+                    text-xs text-gray-500 hover:text-gray-700 hover:bg-blue-50
+                    transition-all duration-150"
+                >
+                  <CheckCheck size={13} />
+                  <span>Semua</span>
+                </button>
+              )}
+              <button
+                onClick={() => setIsSidebarRightOpen?.(false)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center
+                  text-gray-400 hover:text-gray-700 hover:bg-gray-100
+                  transition-all duration-150"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
 
-function IcLogout({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5
-           A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3
-           3m-3-3h12.75"
-      />
-    </svg>
+          {/* Notif list */}
+          <div
+            className="flex-1 overflow-y-auto py-2 px-2
+            [scrollbar-width:none] [&::-webkit-scrollbar]:hidden min-h-0"
+          >
+            {notifs.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center px-6 py-10">
+                <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center mb-3">
+                  <Bell size={20} className="text-gray-400" />
+                </div>
+                <p className="text-sm font-medium text-gray-900 mb-1">
+                  Tidak ada notifikasi
+                </p>
+                <p className="text-xs text-gray-400">
+                  Kamu sudah membaca semua notifikasi.
+                </p>
+              </div>
+            ) : (
+              <ul className="space-y-0.5">
+                {notifs.map((notif, idx) => (
+                  <li
+                    key={notif.id}
+                    style={{
+                      // Items stagger in when sidebar opens
+                      animation: isSidebarRightOpen
+                        ? `slideInRight 280ms ${EASE.out} ${idx * 45 + 80}ms both`
+                        : "none",
+                    }}
+                  >
+                    <button
+                      onClick={() => markRead(notif.id)}
+                      className={`w-full flex items-start gap-3 px-3 py-3.5 rounded-xl
+                        text-left
+                        ${notif.read ? "hover:bg-gray-50" : "bg-blue-50/50 hover:bg-blue-50"}`}
+                      style={{
+                        transition: `background-color 200ms ${EASE.out}`,
+                      }}
+                    >
+                      <NotifIcon type={notif.type} />
+                      <div className="flex-1 min-w-0">
+                        <p
+                          className={`text-xs leading-snug truncate
+                          ${notif.read ? "text-gray-600 font-normal" : "text-gray-900 font-medium"}`}
+                          style={{
+                            transition: `color 250ms, font-weight 250ms`,
+                          }}
+                        >
+                          {notif.title}
+                        </p>
+                        <p className="text-[11px] text-gray-400 mt-1">
+                          {notif.time}
+                        </p>
+                      </div>
+                      {/* Unread dot fades out when read */}
+                      <span
+                        className="mt-1.5 w-2 h-2 rounded-full bg-blue-500 shrink-0"
+                        style={{
+                          opacity: notif.read ? 0 : 1,
+                          transform: notif.read ? "scale(0)" : "scale(1)",
+                          transition: `opacity 300ms ${EASE.out}, transform 300ms ${EASE.spring}`,
+                        }}
+                      />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        {/* ── Activities section ────────────────────────────────────────── */}
+        <div
+          className="flex flex-col border-t border-gray-100"
+          style={{ maxHeight: "45%" }}
+        >
+          <div
+            className="flex items-center justify-between px-5 py-3.5 shrink-0
+            border-b border-gray-100"
+          >
+            <div className="flex items-center gap-2.5">
+              <Settings size={16} className="text-gray-700" />
+              <h2 className="text-sm font-semibold text-gray-900">
+                Activities
+              </h2>
+            </div>
+          </div>
+
+          <div
+            className="overflow-y-auto py-2 px-2
+            [scrollbar-width:none] [&::-webkit-scrollbar]:hidden flex-1 min-h-0"
+          >
+            <ul className="space-y-0.5">
+              {notifs.map((notif, idx) => (
+                <li
+                  key={notif.id}
+                  style={{
+                    animation: isSidebarRightOpen
+                      ? `slideInRight 280ms ${EASE.out} ${idx * 40 + 200}ms both`
+                      : "none",
+                  }}
+                >
+                  <div
+                    className="flex items-start gap-3 px-3 py-3 rounded-xl
+                    hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <NotifIcon type={notif.type} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs leading-snug text-gray-700 truncate">
+                        {notif.title}
+                      </p>
+                      <p className="text-[11px] text-gray-400 mt-1">
+                        {notif.time}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* ── Footer ───────────────────────────────────────────────────── */}
+        <div className="shrink-0 px-4 py-3 border-t border-gray-100">
+          <Link
+            href="/admin/notification"
+            className="block w-full text-center text-xs font-medium
+              text-blue-600 hover:text-blue-700 py-2 rounded-lg hover:bg-blue-50
+              transition-all duration-150"
+          >
+            Lihat semua notifikasi
+          </Link>
+        </div>
+      </aside>
+
+      {/* ── Keyframes (injected once) ──────────────────────────────────── */}
+      <style>{`
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(12px); }
+          to   { opacity: 1; transform: translateX(0);    }
+        }
+        @keyframes badgePop {
+          from { opacity: 0; transform: scale(0.5); }
+          to   { opacity: 1; transform: scale(1);   }
+        }
+        @keyframes dotPulse {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.4; }
+        }
+      `}</style>
+    </>
   );
 }
