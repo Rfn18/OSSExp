@@ -30,6 +30,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { useRouter } from "next/navigation";
 
 const MOCK_USERS = [
   { id: 1, name: "Budi Santoso" },
@@ -39,6 +40,7 @@ const MOCK_USERS = [
 ];
 
 function DashboardHeader() {
+  const router = useRouter();
   return (
     <div
       className="flex flex-col sm:flex-row sm:items-center
@@ -51,7 +53,10 @@ function DashboardHeader() {
         <p className="text-xs text-gray-400 mt-0.5">Menu event management</p>
       </div>
       <div className="w-full flex flex-col justify-end sm:items-end">
-        <Button className="w-full sm:w-auto bg-gradient font-semibold text-white hover:opacity-90 transition cursor-pointer">
+        <Button
+          onClick={() => router.push("/admin/management-event/create")}
+          className="w-full sm:w-auto bg-gradient font-semibold text-white hover:opacity-90 transition cursor-pointer"
+        >
           <Plus size={16} />
           Create Event
         </Button>
