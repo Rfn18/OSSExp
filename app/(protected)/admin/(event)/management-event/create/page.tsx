@@ -260,15 +260,10 @@ export default function CreateEvent() {
         />
       )}
 
-      <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-10 font-sans text-gray-900">
-        <div className="max-w-3xl mx-auto">
-          {/* Page Header */}
+      <div className="font-sans text-gray-900">
+        <div className=" mx-auto">
           <div className="mb-8">
-            <div className="inline-flex items-center gap-2 text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full mb-3">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-              Event Management
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
+            <h1 className="text-xl font-bold text-gray-900 tracking-tight">
               Tambah Event Baru
             </h1>
             <p className="text-sm text-gray-500 mt-1.5">
@@ -277,7 +272,6 @@ export default function CreateEvent() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {/* 1 · Informasi Umum */}
             <SectionCard title="Informasi Umum" step={1}>
               <div className="space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
