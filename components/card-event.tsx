@@ -72,8 +72,7 @@ export function CardEvent({
         )}
       </div>
 
-      {/* Content */}
-      <CardHeader className="flex-1 space-y-3 p-5">
+      <CardHeader className="flex-1 space-y-3 px-5 py-2">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
           <span className="inline-flex items-center gap-1.5">
             <CalendarDays className="h-3.5 w-3.5" aria-hidden />

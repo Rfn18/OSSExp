@@ -53,18 +53,12 @@ const menuItems = [
       {
         name: "Events",
         icon: <Calendar size={18} />,
-        subItems: [
-          { name: "Management", href: "/admin/management-event" },
-          { name: "Approval", href: "/admin/approval-event" },
-        ],
+        href: "/admin/management-event",
       },
       {
         name: "Documentations",
         icon: <FileArchive size={18} />,
-        subItems: [
-          { name: "Management", href: "/admin/management-documentation" },
-          { name: "Approval", href: "/admin/approval-documentation" },
-        ],
+        href: "/admin/management-documentation",
       },
       {
         name: "Categories",
