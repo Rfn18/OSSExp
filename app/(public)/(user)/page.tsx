@@ -1,4 +1,4 @@
-import { MoveRight } from "lucide-react";
+import { MoveRight, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardEvent } from "@/components/card-event";
 
@@ -29,17 +29,17 @@ function InfoCard({
   } as const;
 
   return (
-    <div className="group relative flex gap-4 rounded-2xl border border-border/60 bg-card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-border hover:shadow-sm sm:p-6">
+    <div className="group relative flex gap-4 rounded-2xl border border-border/60 bg-card p-4 sm:p-5 md:p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-border hover:shadow-sm">
       <div
-        className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl ring-1 ring-inset transition-transform duration-300 group-hover:scale-110 ${accentMap[accent]}`}
+        className={`flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-xl ring-1 ring-inset transition-transform duration-300 group-hover:scale-110 ${accentMap[accent]}`}
       >
         {icon}
       </div>
-      <div className="flex-1 space-y-1.5">
-        <h3 className="text-base font-semibold tracking-tight text-foreground">
+      <div className="flex-1 space-y-1 sm:space-y-1.5 min-w-0">
+        <h3 className="text-sm sm:text-base font-semibold tracking-tight text-foreground">
           {title}
         </h3>
-        <p className="text-sm leading-relaxed text-muted-foreground">
+        <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
           {description}
         </p>
       </div>
@@ -48,7 +48,12 @@ function InfoCard({
 }
 
 const IconVisi = (
-  <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    className="h-5 w-5 sm:h-6 sm:w-6"
+    aria-hidden
+  >
     <path
       d="M12 4.5C7 4.5 2.7 8 1 12c1.7 4 6 7.5 11 7.5s9.3-3.5 11-7.5c-1.7-4-6-7.5-11-7.5Z"
       stroke="currentColor"
@@ -59,7 +64,12 @@ const IconVisi = (
 );
 
 const IconMisi1 = (
-  <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    className="h-5 w-5 sm:h-6 sm:w-6"
+    aria-hidden
+  >
     <path
       d="m4 12 5 5L20 6"
       stroke="currentColor"
@@ -71,7 +81,12 @@ const IconMisi1 = (
 );
 
 const IconMisi2 = (
-  <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden>
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    className="h-5 w-5 sm:h-6 sm:w-6"
+    aria-hidden
+  >
     <path
       d="M12 2 3 7l9 5 9-5-9-5Zm-9 10 9 5 9-5M3 17l9 5 9-5"
       stroke="currentColor"
@@ -94,161 +109,199 @@ const events = Array(6).fill({
 
 export default function Home() {
   return (
-    <div className="w-full font-sans dark:bg-black">
-      <section className="min-h-full flex flex-col md:flex-row items-center justify-between gap-10 px-6 sm:px-12 md:px-20 py-16 md:py-0">
-        <div className="flex flex-col gap-7 max-w-xl w-full">
-          <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
-            Mudah lihat dan cari{" "}
-            <span className="relative inline-block">
-              <span className="absolute bottom-1.5 left-0 -z-10 h-3 w-full -rotate-1 bg-yellow-400/80 rounded" />
-              dokumentasi
-            </span>{" "}
-            event OSIS
-          </h1>
+    <>
+      <div className="w-full font-sans dark:bg-black overflow-x-hidden">
+        {/* ── HERO ── */}
+        <section className="min-h-full flex flex-col md:flex-row items-center justify-between gap-10 px-6 sm:px-12 md:px-20 py-16 md:py-0">
+          <div className="flex flex-col gap-6 sm:gap-7 max-w-xl w-full text-center md:text-left items-center md:items-start">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
+              Mudah lihat dan cari{" "}
+              <span className="relative inline-block">
+                <span className="absolute bottom-1.5 left-0 -z-10 h-3 w-full -rotate-1 bg-yellow-400/80 rounded" />
+                dokumentasi
+              </span>{" "}
+              event OSIS
+            </h1>
 
-          <p className="text-base lg:text-lg text-muted-foreground leading-relaxed max-w-md">
-            Cari dokumentasi terbaru dan terbaik dari event organisasi kami,
-            kepoin kami juga. Don't Forget To Reminds.
-          </p>
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground leading-relaxed max-w-md">
+              Cari dokumentasi terbaru dan terbaik dari event organisasi kami,
+              kepoin kami juga. Don't Forget To Reminds.
+            </p>
 
-          <div className="flex items-center gap-4">
-            <Button className="bg-gradient text-lg text-white font-bold flex items-center gap-2 rounded-full px-6 h-12">
-              Explore Event <MoveRight size={24} strokeWidth={3} />
-            </Button>
-            <Button className="text-lg bg-transparent text-foreground border border-foreground font-bold flex items-center gap-2 rounded-full px-6 h-12 ml-4">
-              Tentang OSIS
-            </Button>
-          </div>
-        </div>
-        <div className="relative w-full max-w-lg">
-          <img
-            src="https://picsum.photos/seed/picsum/530/300"
-            alt="Hero Image"
-            className="relative w-full max-w-md mt-8 rounded-3xl z-1 shadow-lg ml-6 -rotate-6"
-          />
-          <img
-            src="https://picsum.photos/seed/picsum/530/300"
-            alt="Hero Image"
-            className="relative w-full max-w-md rounded-3xl z-10 shadow-lg mt-0"
-          />
-        </div>
-      </section>
-
-      <div className="w-full min-h-screen flex flex-1 items-center justify-between font-sans dark:bg-black px-20 mt-10">
-        <div className="flex flex-col gap-8 max-w-xl">
-          <p className="font-light text-primary-blue">SEKILAS TENTANG OSIS</p>
-          <h1 className="text-4xl font-bold leading-tight">
-            OSS67, Terampil Mandiri <br />
-            <span className="relative inline-block">
-              <span className="absolute bottom-2 left-0 -z-10 h-3 w-full -rotate-1  bg-yellow-400"></span>
-              Bersahaja
-            </span>
-          </h1>
-          <p className="text-base font-normal leading-relaxed max-w-prose">
-            Organisasi Siswa Intra Sekolah (OSIS) adalah wadah resmi bagi siswa
-            untuk berorganisasi, berkreasi, dan menyelenggarakan kegiatan yang
-            memperkaya pengalaman belajar di sekolah. seluruh program kerja OSIS
-            menjadi lebih transparan dan mudah diikuti.
-          </p>
-          <div className="flex items-center gap-12">
-            <div>
-              <h3 className="text-3xl font-bold text-gradient">8</h3>
-              <p className="opacity-50">Seksi Bidang</p>
-            </div>
-            <div>
-              <h3 className="text-3xl font-bold text-gradient">30</h3>
-              <p className="opacity-50">Pengurus</p>
-            </div>
-            <div>
-              <h3 className="text-3xl font-bold text-gradient">2020</h3>
-              <p className="opacity-50">Tahun Berdiri</p>
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 sm:gap-4">
+              <Button className="bg-gradient text-base sm:text-lg text-white font-bold flex items-center gap-2 rounded-full px-5 sm:px-6 h-11 sm:h-12">
+                Explore Event{" "}
+                <MoveRight
+                  size={20}
+                  strokeWidth={3}
+                  className="sm:w-6 sm:h-6"
+                />
+              </Button>
+              <Button className="text-base sm:text-lg bg-transparent text-foreground border border-foreground font-bold flex items-center gap-2 rounded-full px-5 sm:px-6 h-11 sm:h-12">
+                Tentang OSIS
+              </Button>
             </div>
           </div>
+          <div className="relative w-full max-w-sm sm:max-w-md md:max-w-lg mt-4 md:mt-0">
+            <img
+              src="https://picsum.photos/seed/picsum/530/300"
+              alt="Hero Image"
+              className="relative w-full max-w-[85%] sm:max-w-md mt-6 sm:mt-8 rounded-2xl sm:rounded-3xl z-1 shadow-lg ml-auto sm:ml-6 -rotate-6"
+            />
+            <img
+              src="https://picsum.photos/seed/picsum/530/300"
+              alt="Hero Image"
+              className="relative w-full max-w-[85%] sm:max-w-md rounded-2xl sm:rounded-3xl z-10 shadow-lg mt-0 mx-auto sm:mx-0"
+            />
+          </div>
+        </section>
+
+        {/* ── TENTANG OSIS ── */}
+        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-10 lg:gap-8 font-sans dark:bg-black px-6 sm:px-12 md:px-20 py-16 lg:py-10 lg:min-h-screen">
+          <div className="flex flex-col gap-6 sm:gap-8 max-w-xl w-full text-center lg:text-left items-center lg:items-start">
+            <p className="font-light text-primary-blue text-sm sm:text-base">
+              SEKILAS TENTANG OSIS
+            </p>
+            <h1 className="text-3xl sm:text-4xl font-bold leading-tight">
+              OSS67, Terampil Mandiri <br />
+              <span className="relative inline-block">
+                <span className="absolute bottom-2 left-0 -z-10 h-3 w-full -rotate-1 bg-yellow-400" />
+                Bersahaja
+              </span>
+            </h1>
+            <p className="text-sm sm:text-base font-normal leading-relaxed max-w-prose">
+              Organisasi Siswa Intra Sekolah (OSIS) adalah wadah resmi bagi
+              siswa untuk berorganisasi, berkreasi, dan menyelenggarakan
+              kegiatan yang memperkaya pengalaman belajar di sekolah. seluruh
+              program kerja OSIS menjadi lebih transparan dan mudah diikuti.
+            </p>
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-6 sm:gap-10 md:gap-12">
+              <div className="text-center lg:text-left">
+                <h3 className="text-2xl sm:text-3xl font-bold text-gradient">
+                  8
+                </h3>
+                <p className="opacity-50 text-sm sm:text-base">Seksi Bidang</p>
+              </div>
+              <div className="text-center lg:text-left">
+                <h3 className="text-2xl sm:text-3xl font-bold text-gradient">
+                  30
+                </h3>
+                <p className="opacity-50 text-sm sm:text-base">Pengurus</p>
+              </div>
+              <div className="text-center lg:text-left">
+                <h3 className="text-2xl sm:text-3xl font-bold text-gradient">
+                  2020
+                </h3>
+                <p className="opacity-50 text-sm sm:text-base">Tahun Berdiri</p>
+              </div>
+            </div>
+          </div>
+          <div className="relative w-full max-w-xl flex flex-col gap-3 sm:gap-4">
+            <InfoCard
+              icon={IconVisi}
+              title="Visi Organisasi"
+              description="Mewujudkan OSIS sebagai organisasi yang aktif, disiplin, dan adaptif terhadap perkembangan teknologi."
+              accent="blue"
+            />
+            <InfoCard
+              icon={IconMisi1}
+              title="Misi Pertama"
+              description="Menggunakan teknologi yang relevan di era digital."
+              accent="orange"
+            />
+            <InfoCard
+              icon={IconMisi2}
+              title="Misi Kedua"
+              description="Menciptakan budaya disiplin dimulai dari pengurus OSIS itu sendiri."
+              accent="blue"
+            />
+            <InfoCard
+              icon={IconMisi2}
+              title="Misi Ketiga"
+              description="Membangun solidaritas dan kerja sama antara pengurus dan warga sekolah."
+              accent="blue"
+            />
+          </div>
         </div>
-        <div className="relative w-full max-w-xl flex flex-col gap-4">
-          <InfoCard
-            icon={IconVisi}
-            title="Visi Organisasi"
-            description="Mewujudkan OSIS sebagai organisasi yang aktif, disiplin, dan adaptif terhadap perkembangan teknologi."
-            accent="blue"
-          />
-          <InfoCard
-            icon={IconMisi1}
-            title="Misi Pertama"
-            description="Menggunakan teknologi yang relevan di era digital."
-            accent="orange"
-          />
-          <InfoCard
-            icon={IconMisi2}
-            title="Misi Kedua"
-            description="Menciptakan budaya disiplin dimulai dari pengurus OSIS itu sendiri."
-            accent="blue"
-          />
-          <InfoCard
-            icon={IconMisi2}
-            title="Misi Ketiga"
-            description="Membangun solidaritas dan kerja sama antara pengurus dan warga sekolah."
-            accent="blue"
-          />
-        </div>
+
+        {/* ── EVENT HIGHLIGHT ── */}
+        <section className="px-6 sm:px-12 md:px-20 py-16 flex flex-col gap-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-1">
+                Dokumentasi
+              </p>
+              <h2 className="text-2xl sm:text-3xl font-bold">
+                Event Highlight
+              </h2>
+            </div>
+            <a
+              href="#"
+              className="flex items-center gap-1.5 text-sm font-semibold text-primary-blue hover:gap-3 transition-all duration-200 w-fit"
+            >
+              Lihat Semua <MoveRight size={16} />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {events.map((e, i) => (
+              <CardEvent key={i} {...e} />
+            ))}
+          </div>
+        </section>
+
+        {/* ── PESAN KETUA ── */}
+        <section className="px-6 sm:px-12 md:px-20 py-12 sm:py-16 pb-20">
+          <div className="relative w-full overflow-hidden rounded-2xl sm:rounded-[2rem] bg-gradient-to-br from-[#0f1e4d] via-[#1e3a8a] to-[#2b4fc0] px-6 py-12 sm:px-12 sm:py-16 md:px-16 md:py-20">
+            {/* decorative blobs */}
+            <div className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-blue-400/20 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl" />
+            <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:24px_24px]" />
+
+            <div className="relative flex flex-col items-center gap-6 sm:gap-8 text-center">
+              <span className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-semibold tracking-widest uppercase text-blue-100/80">
+                <span className="h-px w-6 bg-blue-200/40" />
+                Pesan Ketua OSIS
+                <span className="h-px w-6 bg-blue-200/40" />
+              </span>
+
+              <div className="relative">
+                <div className="absolute -inset-1.5 rounded-full bg-gradient-to-tr from-yellow-400 via-blue-300 to-blue-100 opacity-70 blur-[2px]" />
+                <div className="relative ring-4 ring-white/10 rounded-full p-1 bg-[#1e3a8a]">
+                  <img
+                    src="https://avatar.vercel.sh/shadcn1"
+                    alt="Ketua OSIS"
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
+                  />
+                </div>
+                <div className="absolute -bottom-1 -right-1 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-yellow-400 text-[#1e3a8a] shadow-md">
+                  <Quote
+                    size={14}
+                    className="sm:w-4 sm:h-4"
+                    fill="currentColor"
+                    strokeWidth={0}
+                  />
+                </div>
+              </div>
+
+              <blockquote className="max-w-2xl text-base sm:text-lg md:text-xl font-medium leading-relaxed text-white/90">
+                "Saya berharap OSIS Bhakti Wiyata &amp; TI Pelita Nusantara
+                dapat mengerjakan seluruh visi misi dari OSIS yang sudah dibuat
+                di awal dengan efisien dan objektif."
+              </blockquote>
+
+              <div className="flex flex-col items-center gap-1">
+                <p className="font-bold text-base sm:text-lg text-white">
+                  Fasterino Rafael V.
+                </p>
+                <p className="text-xs sm:text-sm text-blue-100/70">
+                  Ketua OSIS Periode 2025–2026
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
-
-      {/* ── EVENT HIGHLIGHT ── */}
-      <section className="px-6 sm:px-12 md:px-20 py-16 flex flex-col gap-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-1">
-              Dokumentasi
-            </p>
-            <h2 className="text-2xl sm:text-3xl font-bold">Event Highlight</h2>
-          </div>
-          <a
-            href="#"
-            className="flex items-center gap-1.5 text-sm font-semibold text-primary-blue hover:gap-3 transition-all duration-200"
-          >
-            Lihat Semua <MoveRight size={16} />
-          </a>
-        </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {events.map((e, i) => (
-            <CardEvent key={i} {...e} />
-          ))}
-        </div>
-      </section>
-
-      {/* ── PESAN KETUA ── */}
-      <section className="px-6 sm:px-12 md:px-20 py-12 pb-20">
-        <div className="w-full flex flex-col items-center justify-center bg-[#F1F2F3] dark:bg-zinc-900 rounded-3xl p-8 sm:p-12 gap-6 text-center">
-          <div className="flex flex-col items-center gap-3">
-            <span className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">
-              Pesan Ketua OSIS
-            </span>
-            <div className="ring-2 ring-primary-blue/20 rounded-full p-0.5">
-              <img
-                src="https://avatar.vercel.sh/shadcn1"
-                alt="Ketua OSIS"
-                className="w-20 h-20 rounded-full object-cover"
-              />
-            </div>
-          </div>
-
-          <blockquote className="text-base sm:text-lg font-medium text-foreground/80 max-w-xl leading-relaxed italic">
-            "Saya berharap OSIS Bhakti Wiyata &amp; TI Pelita Nusantara dapat
-            mengerjakan seluruh visi misi dari OSIS yang sudah dibuat di awal
-            dengan efisien dan objektif."
-          </blockquote>
-
-          <div>
-            <p className="font-bold text-base">Fasterino Rafael V.</p>
-            <p className="text-sm text-muted-foreground">
-              Ketua OSIS Periode 2025–2026
-            </p>
-          </div>
-        </div>
-      </section>
-    </div>
+    </>
   );
 }

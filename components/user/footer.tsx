@@ -7,9 +7,9 @@ const outfit = Outfit({
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient w-full h-auto text-white p-8 px-20 mt-16">
-      <div className="flex gap-24 justify-between">
-        <div className="flex flex-col w-[30%]">
+    <footer className="bg-gradient w-full h-auto text-white p-6 sm:p-8 px-6 sm:px-12 md:px-20 mt-16">
+      <div className="flex flex-col md:flex-row gap-10 md:gap-16 lg:gap-24 md:justify-between">
+        <div className="flex flex-col w-full md:w-[30%]">
           <div className="flex items-center gap-2">
             <img src="/images/logo.svg" alt="Icon" width="40" height="40" />
             <p className={`${outfit.className} font-bold text-2xl`}>OSS67</p>
@@ -19,8 +19,8 @@ export default function Footer() {
             mendokumentasikan event SMK Bhakti Wiyata & TI Pelita Nusantara.
           </p>
 
-          <ul className="flex items-center gap-4 mt-6">
-            <li className="flex items-center gap-2 border border-white/50 rounded-full p-4 cursor-pointer hover:bg-white/20 transition-colors duration-200">
+          <ul className="flex flex-wrap items-center gap-3 sm:gap-4 mt-6">
+            <li className="flex items-center gap-2 border border-white/50 rounded-full p-3.5 sm:p-4 cursor-pointer hover:bg-white/20 transition-colors duration-200">
               <svg
                 width="12"
                 height="12"
@@ -34,7 +34,7 @@ export default function Footer() {
                 />
               </svg>
             </li>
-            <li className="flex items-center gap-2 border border-white/50 rounded-full p-4 cursor-pointer hover:bg-white/20 transition-colors duration-200">
+            <li className="flex items-center gap-2 border border-white/50 rounded-full p-3.5 sm:p-4 cursor-pointer hover:bg-white/20 transition-colors duration-200">
               <svg
                 width="16"
                 height="16"
@@ -66,7 +66,7 @@ export default function Footer() {
                 </defs>
               </svg>
             </li>
-            <li className="flex items-center gap-2 border border-white/50 rounded-full p-4 cursor-pointer hover:bg-white/20 transition-colors duration-200">
+            <li className="flex items-center gap-2 border border-white/50 rounded-full p-3.5 sm:p-4 cursor-pointer hover:bg-white/20 transition-colors duration-200">
               <svg
                 width="16"
                 height="16"
@@ -80,7 +80,7 @@ export default function Footer() {
                 />
               </svg>
             </li>
-            <li className="flex items-center gap-2 border border-white/50 rounded-full p-4 cursor-pointer hover:bg-white/20 transition-colors duration-200">
+            <li className="flex items-center gap-2 border border-white/50 rounded-full p-3.5 sm:p-4 cursor-pointer hover:bg-white/20 transition-colors duration-200">
               <svg
                 width="16"
                 height="16"
@@ -115,26 +115,32 @@ export default function Footer() {
             </li>
           </ul>
         </div>
-        <div className=" flex flex-col gap-4">
-          <h3 className="font-bold">Platform</h3>
-          <p className="text-sm text-gray-300">Beranda</p>
-          <p className="text-sm text-gray-300">Event</p>
-          <p className="text-sm text-gray-300">Galery</p>
-        </div>
-        <div className=" flex flex-col gap-4">
-          <h3 className="font-bold">Sumber</h3>
-          <p className="text-sm text-gray-300">About OSS67</p>
-          <p className="text-sm text-gray-300">FAQ</p>
-          <p className="text-sm text-gray-300">Kontak</p>
-        </div>
-        <div className=" flex flex-col gap-4">
-          <h3 className="font-bold">Support</h3>
-          <p className="text-sm text-gray-300">Syarat Layanan</p>
-          <p className="text-sm text-gray-300">Kebijakan Privasi</p>
-          <p className="text-sm text-gray-300">Kode Etik</p>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 md:gap-16 lg:gap-24">
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <h3 className="font-bold text-sm sm:text-base">Platform</h3>
+            <p className="text-xs sm:text-sm text-gray-300">Beranda</p>
+            <p className="text-xs sm:text-sm text-gray-300">Event</p>
+            <p className="text-xs sm:text-sm text-gray-300">Galery</p>
+          </div>
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <h3 className="font-bold text-sm sm:text-base">Sumber</h3>
+            <p className="text-xs sm:text-sm text-gray-300">About OSS67</p>
+            <p className="text-xs sm:text-sm text-gray-300">FAQ</p>
+            <p className="text-xs sm:text-sm text-gray-300">Kontak</p>
+          </div>
+          <div className="flex flex-col gap-3 sm:gap-4 col-span-2 sm:col-span-1">
+            <h3 className="font-bold text-sm sm:text-base">Support</h3>
+            <p className="text-xs sm:text-sm text-gray-300">Syarat Layanan</p>
+            <p className="text-xs sm:text-sm text-gray-300">
+              Kebijakan Privasi
+            </p>
+            <p className="text-xs sm:text-sm text-gray-300">Kode Etik</p>
+          </div>
         </div>
       </div>
-      <div className="border-t border-white/20 mt-8 pt-4 flex justify-between text-sm text-gray-300">
+
+      <div className="border-t border-white/20 mt-8 pt-4 flex flex-col sm:flex-row items-center sm:items-center justify-center sm:justify-between gap-2 text-xs sm:text-sm text-gray-300 text-center sm:text-left">
         <p>© 2024 OSS67. All rights reserved.</p>
         <p>Made by Sekbid IPTEK OSS67</p>
       </div>

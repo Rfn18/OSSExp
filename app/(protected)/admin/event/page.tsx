@@ -31,6 +31,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useRouter } from "next/navigation";
+import { DashboardHeader } from "@/components/admin/DashboardHeder";
 
 const MOCK_USERS = [
   { id: 1, name: "Budi Santoso" },
@@ -39,34 +40,9 @@ const MOCK_USERS = [
   { id: 4, name: "Dewi Lestari" },
 ];
 
-function DashboardHeader() {
-  const router = useRouter();
-  return (
-    <div
-      className="flex flex-col sm:flex-row sm:items-center
-      justify-between gap-1 mb-7 w-full"
-    >
-      <div className="w-full">
-        <h1 className="text-xl font-semibold text-gray-900">
-          Event Management
-        </h1>
-        <p className="text-xs text-gray-400 mt-0.5">Menu event management</p>
-      </div>
-      <div className="w-full flex flex-col justify-end sm:items-end">
-        <Button
-          onClick={() => router.push("/admin/management-event/create")}
-          className="w-full sm:w-auto bg-gradient font-semibold text-white hover:opacity-90 transition cursor-pointer"
-        >
-          <Plus size={16} />
-          Create Event
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 export default function EventManagement() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -114,8 +90,24 @@ export default function EventManagement() {
 
   return (
     <>
-      <DashboardHeader />
-
+      <div
+        className="flex flex-col sm:flex-row sm:items-center
+      justify-between gap-1 mb-7 w-full"
+      >
+        <DashboardHeader
+          title="Event Management"
+          description="Menu event management"
+        />
+        <div className="w-full flex flex-col justify-end sm:items-end">
+          <Button
+            onClick={() => router.push("/admin/management-event/create")}
+            className="w-full sm:w-auto bg-gradient font-semibold text-white hover:opacity-90 transition cursor-pointer"
+          >
+            <Plus size={16} />
+            Create Event
+          </Button>
+        </div>
+      </div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 p-4 rounded-2xl border border-border bg-muted/30">
         <p className="text-sm font-semibold text-foreground flex-shrink-0 flex items-center gap-1.5">
           <SlidersHorizontal size={14} className="text-muted-foreground" />

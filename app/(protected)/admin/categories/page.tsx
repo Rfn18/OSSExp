@@ -11,6 +11,8 @@ import {
   AlertTriangle,
   Search,
 } from "lucide-react";
+import { DashboardHeader } from "@/components/admin/DashboardHeder";
+import { Button } from "@/components/ui/button";
 
 // --- Types ---
 type CategoryType = "event" | "doc";
@@ -155,18 +157,18 @@ export default function CategoriesPage() {
     <div className="w-auto h-auto min-h-full font-sans text-gray-900 pb-12">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Kategori</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Kelola kategori event dan kategori dokumentasi
-          </p>
+        <DashboardHeader
+          title="Kategori"
+          description="Kelola kategori event dan kategori dokumentasi"
+        />
+        <div className="w-full flex flex-col justify-end sm:items-end">
+          <Button
+            onClick={openAddModal}
+            className="w-full sm:w-auto bg-gradient font-semibold text-white hover:opacity-90 transition cursor-pointer"
+          >
+            <Plus size={16} /> Tambah Kategori
+          </Button>
         </div>
-        <button
-          onClick={openAddModal}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient hover:bg-gradient/80 cursor-pointer from-slate-900 to-slate-800 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors"
-        >
-          <Plus size={16} /> Tambah Kategori
-        </button>
       </div>
 
       {/* Tabs + Search */}

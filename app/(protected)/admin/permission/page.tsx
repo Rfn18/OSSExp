@@ -13,8 +13,9 @@ import {
   Users,
   Check,
 } from "lucide-react";
+import { DashboardHeader } from "@/components/admin/DashboardHeder";
+import { Button } from "@/components/ui/button";
 
-// --- Types ---
 type Role = {
   id: string;
   name: string;
@@ -352,25 +353,22 @@ export default function RolePermissionPage() {
     );
   }
 
-  // ============ LIST VIEW ============
   return (
     <div className="w-auto h-auto min-h-full font-sans text-gray-900 pb-12">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Role & Permission
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Kelola role dan hak akses tiap modul
-          </p>
+        <DashboardHeader
+          title="Role & Permission"
+          description="Kelola role dan hak akses tiap modul"
+          isGreeting={false}
+        />
+        <div className="w-full flex flex-col justify-end sm:items-end">
+          <Button
+            onClick={openAddModal}
+            className="w-full sm:w-auto bg-gradient font-semibold text-white hover:opacity-90 transition cursor-pointer"
+          >
+            <Plus size={16} /> Tambah Role
+          </Button>
         </div>
-        <button
-          onClick={openAddModal}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1e3a8a] hover:bg-[#172e6e] text-white text-sm font-semibold rounded-xl shadow-sm transition-colors"
-        >
-          <Plus size={16} /> Tambah Role
-        </button>
       </div>
 
       {/* Content Card */}

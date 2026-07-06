@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import UserTrafficChart from "@/components/admin/UserTrafficChart";
 import LatestEventsTable from "@/components/admin/LatestEventsTable";
+import { DashboardHeader } from "@/components/admin/DashboardHeder";
 
 interface CardItem {
   title: string;
@@ -126,38 +127,15 @@ function StatCard({ item }: { item: CardItem }) {
   );
 }
 
-function DashboardHeader() {
-  const now = new Date();
-  const dateStr = now.toLocaleDateString("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
-  return (
-    <div
-      className="flex flex-col sm:flex-row sm:items-center
-      justify-between gap-1 mb-7 w-full"
-    >
-      <div className="w-full">
-        <h1 className="text-xl font-semibold text-gray-900">Overview</h1>
-        <p className="text-xs text-gray-400 mt-0.5">{dateStr}</p>
-      </div>
-      <div className="w-full flex flex-col justify-end sm:items-end">
-        <h1 className="text-xl font-semibold ">
-          Morning, <span className="text-gradient">Fasterino!</span>
-        </h1>
-        <p className="text-xs text-gray-400 mt-0.5">Welcome back</p>
-      </div>
-    </div>
-  );
-}
-
 export default function AdminDashboard() {
   return (
     <div className="w-auto h-auto ">
-      <DashboardHeader />
+      <DashboardHeader
+        title="Overview"
+        description="Welcome back"
+        isGreeting={true}
+        isDate={true}
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {cardItems.map((item, i) => (

@@ -201,7 +201,7 @@ export default function DetailEditDocumentation() {
           />
           <button
             onClick={() => setIsEditMode(false)}
-            className={`relative z-10 flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+            className={`relative flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
               !isEditMode ? "text-gray-900" : "text-gray-400"
             }`}
           >
@@ -209,7 +209,7 @@ export default function DetailEditDocumentation() {
           </button>
           <button
             onClick={() => setIsEditMode(true)}
-            className={`relative z-10 flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+            className={`relative flex-1 flex items-center justify-center gap-1.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
               isEditMode ? "text-gray-900" : "text-gray-400"
             }`}
           >

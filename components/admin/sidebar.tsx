@@ -48,17 +48,17 @@ const menuItems = [
       {
         name: "Overview",
         icon: <ChartPie size={18} />,
-        href: "/admin/dashboard",
+        href: "/admin",
       },
       {
         name: "Events",
         icon: <Calendar size={18} />,
-        href: "/admin/management-event",
+        href: "/admin/event",
       },
       {
         name: "Documentations",
         icon: <FileArchive size={18} />,
-        href: "/admin/management-documentation",
+        href: "/admin/documentation",
       },
       {
         name: "Categories",
@@ -74,7 +74,7 @@ const menuItems = [
       {
         name: "Role & Permission",
         icon: <Key size={18} />,
-        href: "/admin/role-permission",
+        href: "/admin/permission",
       },
       {
         name: "Notification",
@@ -145,7 +145,6 @@ function NavTooltip({
   return (
     <div className="relative group/tip">
       {children}
-      {/* Tooltip slides in from left when icon is hovered */}
       <div
         className="pointer-events-none absolute left-full top-1/2 ml-3 -translate-y-1/2
           rounded-lg bg-gray-900 px-2.5 py-1.5 z-[70]
@@ -253,10 +252,12 @@ export function SidebarLeft() {
 
   const isActive = (path: string | undefined) => {
     if (!path) return false;
+    if (path === "/admin") return pathname === "/admin";
     return pathname === path || pathname.startsWith(`${path}/`);
   };
 
   const isParentActive = (item: any) => {
+    if (pathname.startsWith(`${item.href}/`)) return false;
     if (item.href) return isActive(item.href);
     if (item.subItems)
       return item.subItems.some((sub: any) => isActive(sub.href));
@@ -426,7 +427,7 @@ export function SidebarLeft() {
                   <p className="text-sm font-semibold text-gray-900 truncate">
                     {user.name}
                   </p>
-                  <p className="text-xs text-gray-500">{user.role}</p>
+                  <p className="text-xs text-gray-500">{user.role.name}</p>
                 </div>
               </div>
               <div className="py-1">
@@ -468,7 +469,9 @@ export function SidebarLeft() {
                   <p className="text-sm font-semibold text-gray-900 truncate leading-tight">
                     {user.name}
                   </p>
-                  <p className="text-xs text-gray-400 mt-0.5">{user.role}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    {user.role.name}
+                  </p>
                 </div>
                 {isSidebarLeftOpen && (
                   <ChevronDown
@@ -714,22 +717,6 @@ export function SidebarRight() {
           </Link>
         </div>
       </aside>
-
-      {/* ── Keyframes (injected once) ──────────────────────────────────── */}
-      <style>{`
-        @keyframes slideInRight {
-          from { opacity: 0; transform: translateX(12px); }
-          to   { opacity: 1; transform: translateX(0);    }
-        }
-        @keyframes badgePop {
-          from { opacity: 0; transform: scale(0.5); }
-          to   { opacity: 1; transform: scale(1);   }
-        }
-        @keyframes dotPulse {
-          0%, 100% { opacity: 1; }
-          50%       { opacity: 0.4; }
-        }
-      `}</style>
     </>
   );
 }

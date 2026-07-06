@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DashboardHeader } from "@/components/admin/DashboardHeder";
 
 // --- Types ---
 type DocPhoto = {
@@ -77,36 +78,33 @@ export default function DocGalleriesPage() {
 
   return (
     <div className="w-auto h-auto min-h-full font-sans text-gray-900 pb-12">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Documentations</h1>
-        <p className="text-sm text-gray-500 mt-0.5">List dokumentasi terbaru</p>
-      </div>
+      <DashboardHeader
+        title="documentations"
+        description="List dokumetasi event di SMK Bhakti Wiyata"
+      />
 
-         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 p-4 rounded-2xl border border-border bg-muted/30">
-          <p className="text-sm font-semibold text-foreground flex-shrink-0 flex items-center gap-1.5">
-            <SlidersHorizontal size={14} className="text-muted-foreground" />
-            <span className="text-primary-blue">9</span> Event Ditemukan
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-            <div className="w-full sm:w-auto">
-              <div className="relative">
-                <Search
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-                />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cari nama event..."
-                  className="pl-9 h-10 text-sm rounded-xl"
-                />
-              </div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 p-4 rounded-2xl border border-border bg-muted/30">
+        <p className="text-sm font-semibold text-foreground flex-shrink-0 flex items-center gap-1.5">
+          <SlidersHorizontal size={14} className="text-muted-foreground" />
+          <span className="text-primary-blue">9</span> Event Ditemukan
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+          <div className="w-full sm:w-auto">
+            <div className="relative">
+              <Search
+                size={14}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+              />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari nama event..."
+                className="pl-9 h-10 text-sm rounded-xl"
+              />
             </div>
-
-            
           </div>
         </div>
+      </div>
 
       {/* Content Card */}
       <div className="bg-white rounded-3xl border border-gray-100 shadow-sm">

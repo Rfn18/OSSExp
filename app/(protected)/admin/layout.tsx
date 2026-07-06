@@ -1,7 +1,7 @@
 "use client";
 
-import Header from "@/components/admin/header";
-import { SidebarLeft, SidebarRight } from "@/components/admin/sidebar";
+import Header from "@/components/admin/Header";
+import { SidebarLeft, SidebarRight } from "@/components/admin/Sidebar";
 import { useLayout } from "@/app/context/LayoutContext";
 
 export default function AdminLayout({
