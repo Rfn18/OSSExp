@@ -4,8 +4,6 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-type EventStatus = "completed" | "ongoing" | "upcoming";
-
 interface CalendarEvent {
   id: number;
   name: string;

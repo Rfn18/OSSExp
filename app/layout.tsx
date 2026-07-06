@@ -37,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={` ${poppins.className} ${geistMono.variable} h-full antialiased`}
+      className={` ${poppins.className} ${geistMono.variable} ${outfit.variable} h-full antialiased`}
     >
       <body className="min-h-screen flex flex-col items-center">
         <Providers>{children}</Providers>

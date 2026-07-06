@@ -16,29 +16,25 @@ import {
   CheckCheck,
   LogOut,
 } from "lucide-react";
-import { Outfit } from "next/font/google";
 import { useLayout } from "@/app/context/LayoutContext";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { ReactNode, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { User as UserType } from "@/app/types/userType";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const EASE = {
-  out: "cubic-bezier(0.22, 1, 0.36, 1)",
-  spring: "cubic-bezier(0.34, 1.2, 0.64, 1)",
-  in: "cubic-bezier(0.55, 0, 1, 0.45)",
-} as const;
+import { NavTooltip, ProfileAction, UserAvatar } from "../ui/profile";
 
 const MOCK_USER: UserType | null = {
+  id: "1",
   name: "Budi Santoso",
   email: "budi@gmail.com",
-  role: "Ketua OSIS",
-  avatar: null,
+  role_id: "1",
+  role: {
+    id: "1",
+    name: "Ketua OSIS",
+    guard_name: "admin",
+  },
+  is_active: true,
+  profile_picture: null,
 };
 
 const menuItems = [
@@ -132,85 +128,6 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-function NavTooltip({
-  label,
-  show,
-  children,
-}: {
-  label: string;
-  show: boolean;
-  children: ReactNode;
-}) {
-  if (!show) return <>{children}</>;
-  return (
-    <div className="relative group/tip">
-      {children}
-      <div
-        className="pointer-events-none absolute left-full top-1/2 ml-3 -translate-y-1/2
-          rounded-lg bg-gray-900 px-2.5 py-1.5 z-[70]
-          text-xs font-medium text-white whitespace-nowrap shadow-xl
-          opacity-0 -translate-x-1 scale-95
-          group-hover/tip:opacity-100 group-hover/tip:translate-x-0 group-hover/tip:scale-100
-          transition-[opacity,transform] duration-200"
-        style={{ transitionTimingFunction: EASE.spring }}
-      >
-        {label}
-        <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
-      </div>
-    </div>
-  );
-}
-
-function ProfileAction({
-  href,
-  icon,
-  label,
-}: {
-  href: string;
-  icon: ReactNode;
-  label: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center gap-3 px-4 py-2.5 text-sm
-      text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors duration-150"
-    >
-      <span className="text-gray-400">{icon}</span>
-      {label}
-    </Link>
-  );
-}
-
-function UserAvatar({
-  user,
-  initials,
-  size = "sm",
-}: {
-  user: UserType;
-  initials: string;
-  size?: "sm" | "md";
-}) {
-  const sz = size === "sm" ? "w-8 h-8 text-[11px]" : "w-9 h-9 text-xs";
-  if (user.avatar) {
-    return (
-      <img
-        src={user.avatar}
-        alt={user.name}
-        className={`${sz} rounded-full object-cover shrink-0 ring-2 ring-white`}
-      />
-    );
-  }
-  return (
-    <div
-      className={`${sz} rounded-full shrink-0 flex items-center justify-center
-      font-bold text-white bg-gradient-to-br from-blue-500 to-indigo-600`}
-    >
-      {initials}
-    </div>
-  );
-}
-
 function NotifIcon({ type }: { type: string }) {
   const base = "flex items-center justify-center w-8 h-8 rounded-lg shrink-0";
   switch (type) {
@@ -287,7 +204,7 @@ export function SidebarLeft() {
           className={`rounded-full object-cover transition-all duration-300 ${isSidebarLeftOpen ? "w-10 h-10" : "w-8 h-8"}`}
         />
         <h3
-          className={`${outfit.className} text-xl font-bold text-gradient transition-opacity duration-300 ${isSidebarLeftOpen ? "opacity-100" : "opacity-0 w-0 hidden"}`}
+          className={`font-outfit text-xl font-bold text-gradient transition-opacity duration-300 ${isSidebarLeftOpen ? "opacity-100" : "opacity-0 w-0 hidden"}`}
         >
           OSS67
         </h3>
@@ -427,7 +344,7 @@ export function SidebarLeft() {
                   <p className="text-sm font-semibold text-gray-900 truncate">
                     {user.name}
                   </p>
-                  <p className="text-xs text-gray-500">{user.role.name}</p>
+                  <p className="text-xs text-gray-500">{user.role?.name}</p>
                 </div>
               </div>
               <div className="py-1">
@@ -470,7 +387,7 @@ export function SidebarLeft() {
                     {user.name}
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    {user.role.name}
+                    {user.role?.name}
                   </p>
                 </div>
                 {isSidebarLeftOpen && (
