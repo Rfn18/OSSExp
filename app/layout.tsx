@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { Poppins, Geist_Mono } from "next/font/google";
+import { Poppins, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { Providers } from "@/components/providers";
 config.autoAddCss = false;
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -31,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.className} ${geistMono.variable} h-full antialiased`}
+      className={` ${poppins.className} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-screen flex flex-col items-center">
         <Providers>{children}</Providers>

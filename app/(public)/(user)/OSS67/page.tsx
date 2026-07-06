@@ -62,7 +62,7 @@ export default function OSS67Page() {
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-all duration-700 group-hover:opacity-100" />
           <img
             src="/images/foto-osis.JPG"
-            alt="OSS67 Activities"
+            alt="OSS67 Activities"  
             className="h-60 w-[720px] object-cover object-center grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
           />
           <div className="absolute bottom-4 left-6 z-20 translate-y-4 opacity-0 transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100">

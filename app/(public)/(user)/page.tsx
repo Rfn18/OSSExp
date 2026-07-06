@@ -2,16 +2,6 @@ import { MoveRight, Quote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CardEvent } from "@/components/card-event";
 
-function Divider() {
-  return (
-    <div className="flex items-center gap-3 w-full my-2">
-      <div className="flex-1 h-px bg-border" />
-      <div className="h-1.5 w-1.5 rounded-full bg-blue-400" />
-      <div className="flex-1 h-px bg-border" />
-    </div>
-  );
-}
-
 function InfoCard({
   icon,
   title,
@@ -27,11 +17,11 @@ function InfoCard({
     blue: "bg-blue-500/10 text-blue-600 ring-blue-500/20",
     orange: "bg-orange-500/10 text-orange-600 ring-orange-500/20",
   } as const;
-
+ 
   return (
     <div className="group relative flex gap-4 rounded-2xl border border-border/60 bg-card p-4 sm:p-5 md:p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-border hover:shadow-sm">
       <div
-        className={`flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-xl ring-1 ring-inset transition-transform duration-300 group-hover:scale-110 ${accentMap[accent]}`}
+        className={`flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset transition-transform duration-300 group-hover:scale-110 ${accentMap[accent]}`}
       >
         {icon}
       </div>
@@ -47,6 +37,7 @@ function InfoCard({
   );
 }
 
+// Icon
 const IconVisi = (
   <svg
     viewBox="0 0 24 24"
@@ -96,6 +87,7 @@ const IconMisi2 = (
   </svg>
 );
 
+// Dummy Data
 const events = Array(6).fill({
   status: "ongoing" as const,
   imgSrc: "https://picsum.photos/seed/event/530/300",
@@ -111,7 +103,6 @@ export default function Home() {
   return (
     <>
       <div className="w-full font-sans dark:bg-black overflow-x-hidden">
-        {/* ── HERO ── */}
         <section className="min-h-full flex flex-col md:flex-row items-center justify-between gap-10 px-6 sm:px-12 md:px-20 py-16 md:py-0">
           <div className="flex flex-col gap-6 sm:gap-7 max-w-xl w-full text-center md:text-left items-center md:items-start">
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
@@ -252,24 +243,35 @@ export default function Home() {
 
         {/* ── PESAN KETUA ── */}
         <section className="px-6 sm:px-12 md:px-20 py-12 sm:py-16 pb-20">
-          <div className="relative w-full overflow-hidden rounded-2xl sm:rounded-[2rem] bg-gradient-to-br from-[#0f1e4d] via-[#1e3a8a] to-[#2b4fc0] px-6 py-12 sm:px-12 sm:py-16 md:px-16 md:py-20">
-            {/* decorative blobs */}
-            <div className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-blue-400/20 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-yellow-400/10 blur-3xl" />
-            <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:radial-gradient(circle_at_1px_1px,white_1px,transparent_0)] [background-size:24px_24px]" />
+          {/* ── Main Card ── */}
+          <div className="relative w-full overflow-hidden rounded-2xl sm:rounded-[2rem] bg-muted/50 px-6 py-12 sm:px-12 sm:py-16 md:px-16 md:py-20">
+            {/* ── Decorative colorful elements (inside card) ── */}
+            <div className="pointer-events-none absolute inset-0 z-0">
+              {/* Blurred color blobs */}
+              <div className="absolute -top-16 -left-10 sm:-left-6 md:left-4 h-40 w-40 sm:h-56 sm:w-56 md:h-64 md:w-64 rounded-full bg-blue-400/30 blur-2xl sm:blur-3xl" />
+              <div className="absolute top-1/4 -right-14 sm:-right-8 md:right-0 h-44 w-44 sm:h-60 sm:w-60 md:h-72 md:w-72 rounded-full bg-yellow-300/30 blur-2xl sm:blur-3xl" />
+              <div className="absolute -bottom-16 left-1/4 h-36 w-36 sm:h-48 sm:w-48 md:h-56 md:w-56 rounded-full bg-orange-300/25 blur-2xl sm:blur-3xl" />
+              <div className="absolute -bottom-12 right-4 sm:right-16 md:right-24 h-28 w-28 sm:h-40 sm:w-40 rounded-full bg-pink-300/25 blur-2xl sm:blur-3xl hidden sm:block" />
 
-            <div className="relative flex flex-col items-center gap-6 sm:gap-8 text-center">
-              <span className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-semibold tracking-widest uppercase text-blue-100/80">
-                <span className="h-px w-6 bg-blue-200/40" />
+              {/* Geometric accents */}
+              <div className="absolute top-8 right-10 sm:right-20 md:right-32 h-4 w-4 sm:h-5 sm:w-5 rounded-full bg-yellow-400 hidden sm:block" />
+              <div className="absolute top-14 sm:top-20 right-20 sm:right-32 md:right-48 h-3 w-3 sm:h-3.5 sm:w-3.5 rounded-full bg-blue-500 hidden md:block" />
+              <div className="absolute bottom-12 left-8 sm:left-20 md:left-32 h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-blue-500/70 rotate-12 hidden sm:block" />
+              <div className="absolute bottom-20 sm:bottom-28 left-4 sm:left-14 h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full bg-orange-400 hidden md:block" />
+              <div className="absolute top-1/2 left-4 sm:left-10 h-9 w-9 sm:h-11 sm:w-11 rounded-full border-2 border-yellow-400/50 hidden lg:block" />
+              <div className="absolute top-1/3 right-4 sm:right-10 h-8 w-8 sm:h-9 sm:w-9 rounded-lg border-2 border-blue-400/40 -rotate-12 hidden lg:block" />
+            </div>
+
+            {/* ── Content ── */}
+            <div className="relative z-10 flex flex-col items-center gap-6 sm:gap-8 text-center">
+              <span className="text-xs sm:text-sm opacity-70">
                 Pesan Ketua OSIS
-                <span className="h-px w-6 bg-blue-200/40" />
               </span>
 
               <div className="relative">
-                <div className="absolute -inset-1.5 rounded-full bg-gradient-to-tr from-yellow-400 via-blue-300 to-blue-100 opacity-70 blur-[2px]" />
-                <div className="relative ring-4 ring-white/10 rounded-full p-1 bg-[#1e3a8a]">
+                <div className="rounded-full">
                   <img
-                    src="https://avatar.vercel.sh/shadcn1"
+                    src="/images/FasterinoFormal.png"
                     alt="Ketua OSIS"
                     className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
                   />
@@ -284,17 +286,17 @@ export default function Home() {
                 </div>
               </div>
 
-              <blockquote className="max-w-2xl text-base sm:text-lg md:text-xl font-medium leading-relaxed text-white/90">
+              <blockquote className="max-w-2xl text-base sm:text-lg md:text-xl font-medium leading-relaxed text-black/90">
                 "Saya berharap OSIS Bhakti Wiyata &amp; TI Pelita Nusantara
                 dapat mengerjakan seluruh visi misi dari OSIS yang sudah dibuat
                 di awal dengan efisien dan objektif."
               </blockquote>
 
               <div className="flex flex-col items-center gap-1">
-                <p className="font-bold text-base sm:text-lg text-white">
+                <p className="font-bold text-base sm:text-lg ">
                   Fasterino Rafael V.
                 </p>
-                <p className="text-xs sm:text-sm text-blue-100/70">
+                <p className="text-xs sm:text-sm opacity-70">
                   Ketua OSIS Periode 2025–2026
                 </p>
               </div>
