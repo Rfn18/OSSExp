@@ -147,9 +147,7 @@ function SectionCard({
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
       <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-blue-50 text-blue-600 text-xs font-bold flex-shrink-0">
-            {step}
-          </span>
+          <span className="text-sm font-semibold ">{step}.</span>
           <h2 className="text-base font-semibold text-gray-800">{title}</h2>
         </div>
         {headerRight}

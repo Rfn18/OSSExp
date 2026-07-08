@@ -11,7 +11,7 @@ import {
   AlertTriangle,
   Search,
 } from "lucide-react";
-import { DashboardHeader } from "@/components/admin/DashboardHeder";
+import { DashboardHeader } from "@/components/admin/dashboardHeder";
 import { Button } from "@/components/ui/button";
 
 // --- Types ---

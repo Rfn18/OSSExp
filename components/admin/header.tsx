@@ -1,8 +1,9 @@
 "use client";
 
-import { Bell, PanelRight, Search, Sun } from "lucide-react";
+import { Bell, Link, PanelRight, Search, Sun } from "lucide-react";
 import { Input } from "../ui/input";
 import { useLayout } from "@/app/context/LayoutContext";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Header() {
   const {
@@ -12,6 +13,16 @@ export default function Header() {
     setIsSidebarRightOpen,
   } = useLayout();
 
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const pathNow = () => {
+    const pathSplit = pathname.split("/");
+    const path = pathSplit[pathSplit.length - 1];
+    return path.charAt(0) + path.slice(1);
+  };
+
+  console.log(pathNow());
   return (
     <header
       className={`
@@ -37,9 +48,44 @@ export default function Header() {
           onClick={() => setIsSidebarLeftOpen(!isSidebarLeftOpen)}
         />
         <div className="hidden sm:flex items-center gap-1 text-sm">
-          <h1 className="text-gray-500">Dashboard</h1>
-          <p className="text-gray-300">/</p>
-          <h1 className="font-semibold text-gray-900">Default</h1>
+          {pathname.split("/").map((item, index) => {
+            if (item === "admin") {
+              return (
+                <div
+                  onClick={() => router.push("/admin")}
+                  key={index}
+                  className="flex items-center gap-1 capitalize cursor-pointer "
+                >
+                  <h1 className="text-gray-500 hover:underline">Dashboard</h1>
+                  <p className="text-gray-300">/</p>
+                </div>
+              );
+            }
+            if (item === "") {
+              return null;
+            }
+            if (index === pathname.split("/").length - 1) {
+              return (
+                <div key={index} className="flex items-center gap-1 capitalize">
+                  <h1 className="text-gray-500 font-semibold hover:text-black cursor-pointer">
+                    {pathNow()}
+                  </h1>
+                </div>
+              );
+            }
+            return (
+              <div
+                onClick={() =>
+                  router.push(index === 0 ? "/admin" : `/admin/${item}`)
+                }
+                key={index}
+                className="flex items-center gap-1 capitalize cursor-pointer"
+              >
+                <h1 className="text-gray-500 hover:underline">{item}</h1>
+                <p className="text-gray-300">/</p>
+              </div>
+            );
+          })}
         </div>
         <h1 className="sm:hidden text-base text-gray-500 truncate">
           Dashboard

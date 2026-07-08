@@ -13,7 +13,7 @@ import {
   Users,
   Check,
 } from "lucide-react";
-import { DashboardHeader } from "@/components/admin/DashboardHeder";
+import { DashboardHeader } from "@/components/admin/dashboardHeder";
 import { Button } from "@/components/ui/button";
 
 type Role = {
@@ -597,7 +597,6 @@ export default function RolePermissionPage() {
   );
 }
 
-// --- Permission Checkbox ---
 function PermCheckbox({
   checked,
   onChange,

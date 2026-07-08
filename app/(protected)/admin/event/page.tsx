@@ -31,7 +31,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useRouter } from "next/navigation";
-import { DashboardHeader } from "@/components/admin/DashboardHeder";
+import { DashboardHeader } from "@/components/admin/dashboardHeder";
 
 const MOCK_USERS = [
   { id: 1, name: "Budi Santoso" },
@@ -100,7 +100,7 @@ export default function EventManagement() {
         />
         <div className="w-full flex flex-col justify-end sm:items-end">
           <Button
-            onClick={() => router.push("/admin/management-event/create")}
+            onClick={() => router.push("/admin/event/create")}
             className="w-full sm:w-auto bg-gradient font-semibold text-white hover:opacity-90 transition cursor-pointer"
           >
             <Plus size={16} />

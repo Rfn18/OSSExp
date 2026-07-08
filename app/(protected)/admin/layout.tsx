@@ -1,6 +1,6 @@
 "use client";
 
-import Header from "@/components/admin/Header";
+import Header from "@/components/admin/header";
 import { SidebarLeft, SidebarRight } from "@/components/admin/sidebar";
 import { useLayout } from "@/app/context/LayoutContext";
 

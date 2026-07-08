@@ -6,9 +6,9 @@ import {
   TrendingUp,
   TrendingDown,
 } from "lucide-react";
-import UserTrafficChart from "@/components/admin/UserTrafficChart";
-import LatestEventsTable from "@/components/admin/LatestEventsTable";
-import { DashboardHeader } from "@/components/admin/DashboardHeder";
+import UserTrafficChart from "@/components/admin/userTrafficChart";
+import LatestEventsTable from "@/components/admin/latestEventsTable";
+import { DashboardHeader } from "@/components/admin/dashboardHeder";
 
 interface CardItem {
   title: string;

@@ -4,12 +4,11 @@ import { useState, useMemo } from "react";
 import {
   LineChart,
   Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  TooltipProps,
 } from "recharts";
 import {
   Select,
@@ -18,15 +17,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Users, TrendingUp, TrendingDown, Activity } from "lucide-react";
+import {
+  Users,
+  TrendingUp,
+  TrendingDown,
+  Activity,
+  ChartLine,
+  ChartBar,
+} from "lucide-react";
+import {
+  ChartContainer,
+  ChartConfig,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "../ui/chart";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
-const dailyData = Array.from({ length: 31 }, (_, i) => ({
-  name: (i + 1).toString().padStart(2, "0"),
-  user: Math.floor(Math.random() * 500) + 100,
-  traffic: Math.floor(Math.random() * 1000) + 500,
-}));
+const dailyData = [
+  { name: "01", user: 320, traffic: 780 },
+  { name: "02", user: 410, traffic: 950 },
+  { name: "03", user: 280, traffic: 690 },
+  { name: "04", user: 390, traffic: 880 },
+  { name: "05", user: 450, traffic: 1020 },
+  { name: "06", user: 500, traffic: 1150 },
+  { name: "07", user: 470, traffic: 1080 },
+  { name: "08", user: 360, traffic: 820 },
+  { name: "09", user: 300, traffic: 710 },
+  { name: "10", user: 420, traffic: 940 },
+  { name: "11", user: 480, traffic: 1100 },
+  { name: "12", user: 510, traffic: 1180 },
+  { name: "13", user: 390, traffic: 860 },
+  { name: "14", user: 340, traffic: 790 },
+  { name: "15", user: 460, traffic: 1010 },
+  { name: "16", user: 530, traffic: 1220 },
+  { name: "17", user: 400, traffic: 900 },
+  { name: "18", user: 370, traffic: 830 },
+  { name: "19", user: 440, traffic: 970 },
+  { name: "20", user: 490, traffic: 1120 },
+  { name: "21", user: 520, traffic: 1200 },
+  { name: "22", user: 350, traffic: 800 },
+  { name: "23", user: 310, traffic: 730 },
+  { name: "24", user: 430, traffic: 960 },
+  { name: "25", user: 470, traffic: 1050 },
+  { name: "26", user: 500, traffic: 1140 },
+  { name: "27", user: 380, traffic: 850 },
+  { name: "28", user: 330, traffic: 760 },
+  { name: "29", user: 450, traffic: 990 },
+  { name: "30", user: 480, traffic: 1080 },
+  { name: "31", user: 510, traffic: 1160 },
+];
 
 const monthlyData = [
   { name: "Jan", user: 4000, traffic: 8400 },
@@ -69,7 +109,20 @@ const MONTHS = [
 
 const YEARS = ["2022", "2023", "2024", "2025"];
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+const chartConfig = {
+  user: {
+    label: "Total User",
+    color: "#3b82f6",
+  },
+  traffic: {
+    label: "Total Traffic",
+    color: "#10b981",
+  },
+} satisfies ChartConfig;
+
+type Metric = "user" | "traffic";
+type ChartType = "line" | "bar";
+type Number = "single" | "both";
 
 function formatNumber(n: number) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -77,54 +130,14 @@ function formatNumber(n: number) {
   return n.toString();
 }
 
-function calcTrend(
-  data: { user: number; traffic: number }[],
-  key: "user" | "traffic",
-) {
+function calcTrend(data: { user: number; traffic: number }[], key: Metric) {
   if (data.length < 2) return 0;
   const last = data[data.length - 1][key];
   const prev = data[data.length - 2][key];
   return prev === 0 ? 0 : Math.round(((last - prev) / prev) * 100);
 }
 
-// ─── Custom Tooltip ───────────────────────────────────────────────────────────
-
-function CustomTooltip({
-  active,
-  payload,
-  label,
-}: TooltipProps<number, string>) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div
-      className="bg-white rounded-xl shadow-xl shadow-black/10 border border-gray-100
-      p-3.5 min-w-[160px]"
-    >
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mb-2.5">
-        {label}
-      </p>
-      {payload.map((entry) => (
-        <div
-          key={entry.name}
-          className="flex items-center justify-between gap-4 mb-1.5 last:mb-0"
-        >
-          <div className="flex items-center gap-1.5">
-            <span
-              className="w-2 h-2 rounded-full shrink-0"
-              style={{ backgroundColor: entry.color }}
-            />
-            <span className="text-xs text-gray-500">{entry.name}</span>
-          </div>
-          <span className="text-xs font-semibold text-gray-900 tabular-nums">
-            {formatNumber(entry.value as number)}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ─── Stat Card ─────────────────────────────────────────────────────────────────
+// ─── Stat Card (skaligus jadi selector metric) ────────────────────────────────
 
 function StatCard({
   label,
@@ -132,29 +145,42 @@ function StatCard({
   trend,
   color,
   icon: Icon,
+  active,
+  onClick,
 }: {
   label: string;
   value: number;
   trend: number;
   color: "blue" | "emerald";
   icon: React.ElementType;
+  active: boolean;
+  onClick: () => void;
 }) {
   const isUp = trend >= 0;
   const colorMap = {
     blue: {
       icon: "bg-blue-50 text-blue-600",
       trend: isUp ? "text-emerald-600" : "text-red-500",
+      ring: "ring-2 ring-blue-500 bg-blue-50/60",
     },
     emerald: {
       icon: "bg-emerald-50 text-emerald-600",
       trend: isUp ? "text-emerald-600" : "text-red-500",
+      ring: "ring-2 ring-emerald-500 bg-emerald-50/60",
     },
   };
 
   return (
-    <div
-      className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50
-      border border-gray-100 flex-1 min-w-0"
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl border flex-1 min-w-0
+      text-left transition-all duration-150
+        ${
+          active
+            ? `${colorMap[color].ring} border-transparent`
+            : "bg-gray-50 border-gray-100 hover:bg-gray-100"
+        }`}
     >
       <div
         className={`w-9 h-9 rounded-lg flex items-center justify-center
@@ -179,27 +205,25 @@ function StatCard({
           </span>
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
-// ─── Timeframe Pill ───────────────────────────────────────────────────────────
-
-function TimeframePill({
-  value,
+function Pill({
   active,
   onClick,
   children,
 }: {
-  value: string;
   active: boolean;
   onClick: () => void;
   children: React.ReactNode;
 }) {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150
+      className={`cursor-pointer px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150
+        flex items-center gap-1.5
         ${
           active
             ? "bg-white text-gray-900 shadow-sm ring-1 ring-gray-200/80"
@@ -215,6 +239,9 @@ export default function UserTrafficChart() {
   const [timeframe, setTimeframe] = useState("monthly");
   const [selectedMonth, setSelectedMonth] = useState("Jan");
   const [selectedYear, setSelectedYear] = useState("2024");
+  const [chartType, setChartType] = useState<ChartType>("line");
+  const [metric, setMetric] = useState<Metric>("user");
+  const [chartNumber, setChartNumber] = useState<Number>("single");
 
   const data = useMemo(() => {
     switch (timeframe) {
@@ -231,6 +258,8 @@ export default function UserTrafficChart() {
   const totalTraffic = data.reduce((s, d) => s + d.traffic, 0);
   const userTrend = calcTrend(data, "user");
   const trafficTrend = calcTrend(data, "traffic");
+
+  const activeColor = chartConfig[metric].color;
 
   return (
     <div
@@ -287,111 +316,145 @@ export default function UserTrafficChart() {
               </Select>
             </div>
 
-            <div className="flex items-center gap-0.5 bg-gray-100 rounded-xl p-1">
+            <div className="flex items-center gap-0.5 bg-gray-rounded-xl p-1">
               {[
                 { value: "daily", label: "Harian" },
                 { value: "monthly", label: "Bulanan" },
                 { value: "yearly", label: "Tahunan" },
               ].map((tf) => (
-                <TimeframePill
+                <Pill
                   key={tf.value}
-                  value={tf.value}
                   active={timeframe === tf.value}
                   onClick={() => setTimeframe(tf.value)}
                 >
                   {tf.label}
-                </TimeframePill>
+                </Pill>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="flex gap-3 mt-4">
-          <StatCard
-            label="Total User"
-            value={totalUser}
-            trend={userTrend}
-            color="blue"
-            icon={Users}
-          />
-          <StatCard
-            label="Total Traffic"
-            value={totalTraffic}
-            trend={trafficTrend}
-            color="emerald"
-            icon={Activity}
-          />
+        <div className="flex flex-col sm:flex-row gap-3 mt-4 sm:items-stretch">
+          <div className="flex gap-3 flex-1">
+            <StatCard
+              label="Total User"
+              value={totalUser}
+              trend={userTrend}
+              color="blue"
+              icon={Users}
+              active={metric === "user"}
+              onClick={() => setMetric("user")}
+            />
+            <StatCard
+              label="Total Traffic"
+              value={totalTraffic}
+              trend={trafficTrend}
+              color="emerald"
+              icon={Activity}
+              active={metric === "traffic"}
+              onClick={() => setMetric("traffic")}
+            />
+          </div>
+
+          <div className="h-10 flex items-center gap-0.5 bg-gray-50 border border-gray-100 rounded-xl p-1 self-start sm:self-center">
+            <Pill
+              active={chartType === "line"}
+              onClick={() => setChartType("line")}
+            >
+              <ChartLine size={13} />
+              Line
+            </Pill>
+            <Pill
+              active={chartType === "bar"}
+              onClick={() => setChartType("bar")}
+            >
+              <ChartBar size={13} />
+              Bar
+            </Pill>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 px-5 sm:px-6 pt-4 pb-0">
-        {[
-          { color: "#3b82f6", label: "Total User" },
-          { color: "#10b981", label: "Total Traffic" },
-        ].map(({ color, label }) => (
-          <div key={label} className="flex items-center gap-1.5">
-            <span
-              className="w-5 h-0.5 rounded-full inline-block"
-              style={{ backgroundColor: color }}
-            />
-            <span className="text-xs text-gray-500">{label}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="h-[280px] sm:h-[340px] px-2 pb-4 pt-2">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={data}
-            margin={{ top: 10, right: 12, bottom: 0, left: -10 }}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              vertical={false}
-              stroke="#F3F4F6"
-            />
-            <XAxis
-              dataKey="name"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#9CA3AF", fontSize: 11 }}
-              dy={10}
-            />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "#9CA3AF", fontSize: 11 }}
-              tickFormatter={formatNumber}
-              width={40}
-            />
-            <Tooltip
-              content={<CustomTooltip />}
-              cursor={{
-                stroke: "#E5E7EB",
-                strokeWidth: 1,
-                strokeDasharray: "4 2",
-              }}
-            />
-            <Line
-              type="monotone"
-              name="Total User"
-              dataKey="user"
-              stroke="#3b82f6"
-              strokeWidth={2.5}
-              dot={false}
-              activeDot={{ r: 5, strokeWidth: 0, fill: "#3b82f6" }}
-            />
-            <Line
-              type="monotone"
-              name="Total Traffic"
-              dataKey="traffic"
-              stroke="#10b981"
-              strokeWidth={2.5}
-              dot={false}
-              activeDot={{ r: 5, strokeWidth: 0, fill: "#10b981" }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+      <div className="h-[280px] sm:h-[340px] px-2 pb-4 pt-4">
+        <ChartContainer config={chartConfig} className="h-full w-full">
+          {chartType === "line" ? (
+            <LineChart
+              data={data}
+              margin={{ top: 10, right: 12, bottom: 0, left: -10 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#F3F4F6"
+              />
+              <XAxis
+                dataKey="name"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#9CA3AF", fontSize: 11 }}
+                dy={10}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#9CA3AF", fontSize: 11 }}
+                tickFormatter={formatNumber}
+                width={40}
+              />
+              <ChartTooltip
+                cursor={{
+                  stroke: "#E5E7EB",
+                  strokeWidth: 1,
+                  strokeDasharray: "4 2",
+                }}
+                content={<ChartTooltipContent indicator="dot" />}
+              />
+              <Line
+                type="monotone"
+                dataKey={metric}
+                stroke={activeColor}
+                strokeWidth={2.5}
+                dot={false}
+                activeDot={{ r: 5, strokeWidth: 0, fill: activeColor }}
+              />
+            </LineChart>
+          ) : (
+            <BarChart
+              data={data}
+              margin={{ top: 10, right: 12, bottom: 0, left: -10 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#F3F4F6"
+              />
+              <XAxis
+                dataKey="name"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#9CA3AF", fontSize: 11 }}
+                dy={10}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#9CA3AF", fontSize: 11 }}
+                tickFormatter={formatNumber}
+                width={40}
+              />
+              <ChartTooltip
+                cursor={{ fill: "#F9FAFB" }}
+                content={<ChartTooltipContent indicator="dot" />}
+              />
+              <Bar
+                dataKey={metric}
+                fill={activeColor}
+                radius={[4, 4, 0, 0]}
+                maxBarSize={36}
+              />
+            </BarChart>
+          )}
+        </ChartContainer>
       </div>
     </div>
   );
