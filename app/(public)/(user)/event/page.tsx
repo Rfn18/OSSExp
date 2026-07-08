@@ -24,17 +24,17 @@ const events = Array(6).fill({
 
 export default function EventPage() {
   return (
-    <div className="w-full min-h-screen font-sans dark:bg-black">
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-12">
-        <div className="mb-10">
+    <div className="w-full font-sans dark:bg-black">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-12 pt-4">
+        <div className="mb-8 sm:mb-10">
           <span className="inline-block text-xs font-semibold tracking-widest uppercase text-primary-blue mb-2">
             Dokumentasi Kegiatan
           </span>
-          <h1 className="text-3xl sm:text-4xl font-bold leading-tight text-foreground">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight text-foreground">
             Ada apa aja sih di{" "}
             <span className="text-primary-blue">OSSBHAKTA67</span>?
           </h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-2 leading-relaxed">
+          <p className="text-sm sm:text-base text-muted-foreground mt-2 leading-relaxed max-w-lg">
             Temukan dokumentasi kegiatan, acara lomba, kegiatan islami dan semua
             yang kami buat.
           </p>

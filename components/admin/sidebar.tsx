@@ -37,6 +37,12 @@ const MOCK_USER: UserType | null = {
   profile_picture: null,
 };
 
+const EASE = {
+  out: "cubic-bezier(0.25,1,0.5,1)",
+  in: "cubic-bezier(0.5,0,0.75,0)",
+  spring: "cubic-bezier(0.34,1.56,0.64,1)",
+};
+
 const menuItems = [
   {
     title: "Dashboards",

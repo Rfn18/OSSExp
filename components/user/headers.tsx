@@ -240,7 +240,6 @@ export default function Headers() {
             </div>
           )}
 
-          {/* Auth – logged in */}
           {user && (
             <div ref={profileRef} className="relative hidden md:block">
               <button
@@ -269,7 +268,6 @@ export default function Headers() {
                 />
               </button>
 
-              {/* Profile dropdown */}
               <div
                 className={`absolute right-0 top-full mt-3 w-60 rounded-2xl
                   bg-white dark:bg-zinc-900

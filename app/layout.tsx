@@ -39,7 +39,7 @@ export default function RootLayout({
       lang="en"
       className={` ${poppins.className} ${geistMono.variable} ${outfit.variable} h-full antialiased`}
     >
-      <body className="min-h-screen flex flex-col items-center">
+      <body className="w-full min-h-screen flex flex-col items-center">
         <Providers>{children}</Providers>
       </body>
     </html>

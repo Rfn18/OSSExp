@@ -11,7 +11,7 @@ export default function UserLayout({
   return (
     <>
       <Headers />
-      <main>{children}</main>
+      <main className="w-full">{children}</main>
       <Footer />
     </>
   );
