@@ -32,8 +32,7 @@ export function CardEvent({
   const s = status ? statusConfig[status] : statusConfig.past;
 
   return (
-    <Card className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border/60 bg-card p-0 gap-0 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-border hover:shadow-lg focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-      {/* Image */}
+    <Card className="group relative flex flex-col overflow-hidden rounded-2xl sm:rounded-3xl border border-border/60 bg-card p-0 gap-0 transition-all duration-300">
       <div className="relative aspect-16/10 sm:aspect-video w-full overflow-hidden bg-muted">
         {imgSrc ? (
           <img
@@ -43,7 +42,7 @@ export function CardEvent({
             className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center">
+          <div className="flex h-full w-full items-center justify-center bg-white">
             <ImageOff
               className="h-6 w-6 text-muted-foreground/40"
               aria-hidden
@@ -84,7 +83,7 @@ export function CardEvent({
         </CardDescription>
       </CardHeader>
 
-      <CardFooter className="mt-4 sm:mt-5 border-t border-border/60 px-4 sm:px-5 py-3 sm:py-3.5">
+      <CardFooter className="mt-4 sm:mt-5 border-t border-border/60 px-4 sm:px-5 py-3 sm:py-3.5 bg-white">
         <CardAction className="w-full">
           <Button
             asChild

@@ -40,8 +40,10 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --color-gradient: var(--bg-gradient);
+  --color-gradient-hover: var(--bg-gradient-hover);
   --color-primary-blue: var(--text-primary-blue);
   --color-drive-gradient: var(--drive-gradient);
+  --animate-floating: floating 3s ease-in-out infinite;
   --color-alert: var(--alert);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -88,6 +90,7 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --bg-gradient: linear-gradient(90deg, #003399 35%, #243061 100%);
+  --bg-gradient-hover: linear-gradient(105deg, #0047d6 25%, #31458d 100%);
   --drive-gradient: linear-gradient(
     90deg,
     #4688f4 0%,
@@ -131,6 +134,7 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
   --bg-gradient: linear-gradient(90deg, #003399 35%, #243061 100%);
+  --bg-gradient-hover: linear-gradient(105deg, #0047d6 25%, #31458d 100%);
   --drive-gradient: linear-gradient(
     90deg,
     #4688f4 0%,
@@ -155,6 +159,10 @@
   background-image: var(--bg-gradient);
 }
 
+@utility bg-gradient-hover {
+  background-image: var(--bg-gradient-hover);
+}
+
 @utility bg-drive-gradient {
   background-image: var(--drive-gradient);
 }
@@ -171,6 +179,29 @@
 
 @utility bg-primary-blue {
   background-color: var(--color-primary-blue);
+}
+
+@keyframes floating {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes rotate3d-custom {
+  0% {
+    transform: rotateY(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes slideInRight {

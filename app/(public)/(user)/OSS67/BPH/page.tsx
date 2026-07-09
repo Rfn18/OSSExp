@@ -65,20 +65,22 @@ export default function SekbidPage() {
   ];
 
   return (
-    <div className={`font-outfit min-h-screen bg-white`}>
-      <div className="max-w-full px-5 pt-2 sm:px-8 md:px-12 py-14">
+    <div className="w-full font-sans dark:bg-black">
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 md:px-12 py-12 pt-4">
         <SekbidHeader
           sekbid="BPH"
           description="Badan Pengurus Harian Osis SMK Bhakti Wiyata & SMK Ti Pelita Nusantara"
         />
-        
+
         <section className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-6 gap-4 sm:gap-6">
           {members.map((m, i) => (
             <PeopleCard key={i} img={m.img} name={m.name} role={m.role} />
           ))}
         </section>
 
-        <Divider />
+        <div className="flex items-center justify-center w-full my-4">
+          <Divider />
+        </div>
 
         <SekbidWelcoming
           message={message}
@@ -86,9 +88,8 @@ export default function SekbidPage() {
           name="Fasterino Rafael V."
         />
 
-        <Divider />
-
         <section className="flex flex-col items-center gap-6">
+          <Divider />
           <div className="text-center">
             <span className="text-xs font-semibold tracking-widest uppercase text-gray-400">
               Agenda

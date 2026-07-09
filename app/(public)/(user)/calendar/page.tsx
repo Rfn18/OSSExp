@@ -174,8 +174,7 @@ export default function CalendarPage() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* ── Calendar Grid ── */}
-          <div className="flex-1 min-w-0 bg-white rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-6">
+          <div className="flex-1 min-w-0 bg-white rounded-2xl sm:rounded-3xl border border-gray-100 p-4 sm:p-6">
             <div className="flex items-center justify-between gap-3 mb-4 sm:mb-5">
               <div className="text-sm sm:text-base font-bold text-gray-900">
                 {monthNamesFull[currentMonth]}{" "}
@@ -268,9 +267,8 @@ export default function CalendarPage() {
             </div>
           </div>
 
-          {/* ── Sidebar ── */}
           <div className="w-full lg:w-[300px] shrink-0">
-            <div className="bg-white rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-5">
+            <div className="bg-white rounded-2xl sm:rounded-3xl border border-gray-100 p-4 sm:p-5">
               <h3 className="font-bold text-gray-900 mb-4 px-1">
                 Event Tahun Ini
               </h3>

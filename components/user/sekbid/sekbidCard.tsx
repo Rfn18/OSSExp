@@ -40,13 +40,13 @@ export function ProkerCard({
   description: string;
 }) {
   return (
-    <div className="group flex gap-4 rounded-2xl border border-border bg-white p-5 hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-      <div className="shrink-0 h-9 w-9 rounded-lg bg-primary-blue flex items-center justify-center text-white text-sm font-bold">
+    <div className="group flex gap-4 rounded-2xl border border-border bg-white p-5 hover:shadow-xs transition-all duration-300 hover:-translate-y-0.5">
+      <div className="shrink-0 h-9 w-9 rounded-lg border border-border flex items-center justify-center text-black text-sm font-bold">
         {index}
       </div>
       <div>
         <h5
-          className={`font-outfit font-semibold text-gray-900 text-base leading-snug`}
+          className={`font-outfit font-semibold text-black text-base leading-snug`}
         >
           {title}
         </h5>
@@ -90,7 +90,7 @@ export function SekbidWelcoming({
   name: string;
 }) {
   return (
-    <section className="flex flex-col items-center gap-5 max-w-2xl mx-auto">
+    <section className="flex flex-col items-center gap-5 max-w-5xl mx-auto">
       <div className="text-center">
         <span className="text-xs font-semibold tracking-widest uppercase text-gray-400">
           Pesan &amp; Harapan
