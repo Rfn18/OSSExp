@@ -1,7 +1,11 @@
+"use client";
+
 import { Divider } from "@/components/ui/divider";
 import { FadeInSection } from "@/lib/fadeInSection";
+import { useRouter } from "next/navigation";
 
 export default function OSS67Page() {
+  const router = useRouter()
   const bphMembers = [
     {
       initial: "Sekbid 1",
@@ -117,70 +121,76 @@ export default function OSS67Page() {
         <h3 className="text-3xl font-bold my-6 mb-10 text-white">
           Struktur Organisasi
         </h3>
-        <div className="group relative inline-block cursor-pointer overflow-hidden rounded-xl">
-          <h3 className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-6xl md:text-8xl font-black text-white transition-all duration-700 ease-out group-hover:scale-75 group-hover:opacity-0 group-hover:blur-sm">
-            BPH
-          </h3>
-          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-all duration-700 group-hover:opacity-100" />
-          <img
-            src="/images/seksi-bidang/BPH.JPG"
-            alt="OSS67 Activities"
-            className="h-60 w-[720px] object-cover object-center grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
-          />
-          <div className="absolute bottom-4 left-6 z-20 translate-y-4 opacity-0 transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100">
-            <h4 className="text-lg sm:text-xl md:text-2xl font-bold text-white select-none">
-              Badan Pengurus Harian
-            </h4>
-            <p className="text-sm text-white/80 select-none">
-              Penggerak utama organisasi
-            </p>
-          </div>
+        {/* BPH */}
+      <div className="group relative block w-full max-w-3xl mx-auto overflow-hidden rounded-xl cursor-pointer">
+        <h3 className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-6xl md:text-8xl font-black text-white transition-all duration-700 ease-out group-hover:scale-75 group-hover:opacity-0 group-hover:blur-sm">
+          BPH
+        </h3>
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-all duration-700 group-hover:opacity-100" />
+        <img
+          src="/images/seksi-bidang/BPH.JPG"
+          alt="OSS67 Activities"
+          className="h-48 sm:h-56 md:h-60 w-full object-cover object-center grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
+        />
+        <div className="absolute bottom-4 left-6 z-20 translate-y-4 opacity-0 transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100">
+          <h4 className="text-lg sm:text-xl md:text-2xl font-bold text-white select-none">
+            Badan Pengurus Harian
+          </h4>
+          <p className="text-sm text-white/80 select-none">
+            Penggerak utama organisasi
+          </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:px-4 lg:px-20 mt-6">
-          {bphMembers.map((member, i) => (
-            <FadeInSection
-              delay={i * 100}
-              className="group relative inline-block cursor-pointer overflow-hidden rounded-xl"
-            >
-              <h3 className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-5xl md:text-6xl text-center font-black text-white transition-all duration-700 ease-out group-hover:scale-75 group-hover:opacity-0 group-hover:blur-sm select-none">
-                {member.initial}
-              </h3>
-              <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-all duration-700 group-hover:opacity-100 select-none" />
-              <img
-                src={member.img}
-                alt="OSS67 Activities"
-                className="h-60 w-[720px] object-cover object-center grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0 select-none"
-              />
-              <div className="absolute bottom-4 left-6 z-20 translate-y-4 opacity-0 transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100 select-none">
-                <h4 className="text-lg md:text-xl font-bold text-white">
-                  {member.standFor}
-                </h4>
-                <p className="text-xs md:text-sm text-white/80 select-none">
-                  {member.desc}
-                </p>
-              </div>
-            </FadeInSection>
-          ))} 
+      </div>
+
+      {/* Grid Sekbid 1-6 */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:px-4 lg:px-20 mt-6 w-full max-w-4xl mx-auto">
+        {bphMembers.map((member, i) => (
+          <FadeInSection
+            key={i}
+            delay={i * 100}
+            className="group relative block w-full overflow-hidden rounded-xl cursor-pointer"
+          >
+            <h3 className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-5xl md:text-6xl text-center font-black text-white transition-all duration-700 ease-out group-hover:scale-75 group-hover:opacity-0 group-hover:blur-sm select-none">
+              {member.initial}
+            </h3>
+            <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-all duration-700 group-hover:opacity-100 select-none" />
+            <img
+              src={member.img}
+              alt="OSS67 Activities"
+              className="h-48 sm:h-56 md:h-60 w-full object-cover object-center grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0 select-none"
+            />
+            <div className="absolute bottom-4 left-6 z-20 translate-y-4 opacity-0 transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100 select-none">
+              <h4 className="text-lg md:text-xl font-bold text-white">
+                {member.standFor}
+              </h4>
+              <p className="text-xs md:text-sm text-white/80 select-none">
+                {member.desc}
+              </p>
+            </div>
+          </FadeInSection>
+        ))}
+      </div>
+
+      {/* Sekbid 7 */}
+      <div className="group relative block w-full max-w-3xl mx-auto overflow-hidden rounded-xl mt-6 cursor-pointer">
+        <h3 className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-5xl md:text-6xl text-center font-black text-white transition-all duration-700 ease-out group-hover:scale-75 group-hover:opacity-0 group-hover:blur-sm">
+          Sekbid 7
+        </h3>
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-all duration-700 group-hover:opacity-100" />
+        <img
+          src="/images/seksi-bidang/Sekbid7.png"
+          alt="OSS67 Activities"
+          className="h-48 sm:h-56 md:h-60 w-full object-cover object-center grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
+        />
+        <div className="absolute bottom-4 left-6 z-20 translate-y-4 opacity-0 transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100">
+          <h4 className="text-lg sm:text-xl md:text-2xl font-bold text-white select-none">
+            Divisi Kewirausahaan
+          </h4>
+          <p className="text-sm text-white/80 select-none">
+            Mengembangkan jiwa wirausaha dan inovasi
+          </p>
         </div>
-         <div className="group relative inline-block cursor-pointer overflow-hidden rounded-xl mt-6">
-          <h3 className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-5xl md:text-6xl text-center font-black text-white transition-all duration-700 ease-out group-hover:scale-75 group-hover:opacity-0 group-hover:blur-sm">
-            Sekbid 7
-          </h3>
-          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-all duration-700 group-hover:opacity-100" />
-          <img
-            src="/images/seksi-bidang/Sekbid7.png"
-            alt="OSS67 Activities"
-            className="h-60 w-[720px] object-cover object-center grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
-          />
-          <div className="absolute bottom-4 left-6 z-20 translate-y-4 opacity-0 transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100">
-            <h4 className="text-lg sm:text-xl md:text-2xl font-bold text-white select-none">
-              Divisi Kewirausahaan
-            </h4>
-            <p className="text-sm text-white/80 select-none">
-              Mengembangkan jiwa wirausaha dan inovasi
-            </p>
-          </div>
-        </div>
+      </div>
       </section>
     </div>
   );

@@ -263,9 +263,9 @@ export default function Home() {
               <div className="relative">
                 <div className="rounded-full">
                   <img
-                    src="/images/FasterinoFormal.png"
+                    src="/images/KetuaOsis.png"
                     alt="Ketua OSIS"
-                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover hover:scale-120"
                   />
                 </div>
                 <div className="absolute -bottom-1 -right-1 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full bg-yellow-400 text-[#1e3a8a] shadow-md">
@@ -286,7 +286,7 @@ export default function Home() {
 
               <div className="flex flex-col items-center gap-1">
                 <p className="font-bold text-base sm:text-lg ">
-                  Fasterino Rafael V.
+                  Talita Fitria Puspa H.
                 </p>
                 <p className="text-xs sm:text-sm opacity-70">
                   Ketua OSIS Periode 2025–2026
