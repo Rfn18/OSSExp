@@ -258,7 +258,7 @@ export default function Headers() {
                     className={`text-[10px] mt-0.5 transition-colors
                     ${isDark ? "text-white/50" : "text-zinc-400"}`}
                   >
-                    {user.role.name}
+                    {user?.role?.name}
                   </p>
                 </div>
                 <IcChevron
@@ -291,7 +291,7 @@ export default function Headers() {
                         {user.name}
                       </p>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                        {user.role.name}
+                        {user?.role?.name}
                       </p>
                     </div>
                   </div>
@@ -439,7 +439,7 @@ export default function Headers() {
                     <p className="text-sm font-semibold text-gray-900 truncate">
                       {user.name}
                     </p>
-                    <p className="text-xs text-gray-500">{user.role.name}</p>
+                    <p className="text-xs text-gray-500">{user?.role?.name}</p>
                   </div>
                 </div>
                 <div className="py-1">
@@ -481,7 +481,7 @@ export default function Headers() {
                       {user.name}
                     </p>
                     <p className="text-xs text-gray-400 mt-0.5">
-                      {user.role.name}
+                      {user?.role?.name}
                     </p>
                   </div>
 
