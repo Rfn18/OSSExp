@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MailCheck, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 60;
 
-export default function VerifyEmailPage() {
+export function VerifyEmailContent() {
   const router = useRouter();
   const params = useSearchParams();
   const email = params.get("email") || "nama@email.com";
@@ -149,5 +149,14 @@ export default function VerifyEmailPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={null}>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }
