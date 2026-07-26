@@ -1,1 +1,1 @@
-type EventStatus = "completed" | "ongoing" | "upcoming";
+export type EventStatus = "completed" | "ongoing" | "upcoming";
