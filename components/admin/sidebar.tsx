@@ -43,7 +43,24 @@ const EASE = {
   spring: "cubic-bezier(0.34,1.56,0.64,1)",
 };
 
-const menuItems = [
+type SidebarSubItem = {
+  name: string;
+  href: string;
+};
+
+type SidebarItem = {
+  name: string;
+  icon: React.ReactNode;
+  href: string;
+  subItems?: SidebarSubItem[];
+};
+
+type SidebarSection = {
+  title: string;
+  items: SidebarItem[];
+};
+
+const menuItems: SidebarSection[] = [
   {
     title: "Dashboards",
     items: [
