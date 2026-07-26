@@ -107,7 +107,7 @@ export default function Headers() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [isDark, setIsDark] = useState(true);
 
-  const [user] = useState<User | null>(MOCK_USER);
+  const [user] = useState<UserType | null>(MOCK_USER);
 
   const headerRef = useRef<HTMLElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
