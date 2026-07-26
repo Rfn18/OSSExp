@@ -15,7 +15,7 @@ import {
   Mail,
   Globe,
 } from "lucide-react";
-import { DashboardHeader } from "@/components/admin/dashboardHeder";
+import { DashboardHeader } from "@/components/admin/dashboardHeader";
 import { Button } from "@/components/ui/button";
 
 type NotificationItem = {

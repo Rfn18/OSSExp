@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { User } from "@/app/types/userType";
-import { DashboardHeader } from "@/components/admin/dashboardHeder";
+import { DashboardHeader } from "@/components/admin/dashboardHeader";
 import { Button } from "@/components/ui/button";
 import { Pencil, Plus, Search, Trash2, Users } from "lucide-react";
 import DataTable, { DataTableColumn } from "@/components/admin/table/dataTable";

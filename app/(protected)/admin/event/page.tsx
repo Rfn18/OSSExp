@@ -31,7 +31,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useRouter } from "next/navigation";
-import { DashboardHeader } from "@/components/admin/dashboardHeder";
+import { DashboardHeader } from "@/components/admin/dashboardHeader";
 
 const MOCK_USERS = [
   { id: 1, name: "Budi Santoso" },

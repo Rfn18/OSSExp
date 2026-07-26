@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DashboardHeader } from "@/components/admin/dashboardHeder";
+import { DashboardHeader } from "@/components/admin/dashboardHeader";
 
 // --- Types ---
 type DocPhoto = {

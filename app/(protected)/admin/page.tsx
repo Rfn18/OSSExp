@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import UserTrafficChart from "@/components/admin/userTrafficChart";
 import LatestEventsTable from "@/components/admin/latestEventsTable";
-import { DashboardHeader } from "@/components/admin/dashboardHeder";
+import { DashboardHeader } from "@/components/admin/DashboardHeader";
 
 interface CardItem {
   title: string;
