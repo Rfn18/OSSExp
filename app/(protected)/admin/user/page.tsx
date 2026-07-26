@@ -8,7 +8,7 @@ import { Pencil, Plus, Search, Trash2, Users } from "lucide-react";
 import DataTable, { DataTableColumn } from "@/components/admin/table/dataTable";
 import { ActionButton, StatusBadge } from "@/components/admin/table/tableParts";
 
-const EMAIL_ADDRESS = "rinofaster89@gmail.com";
+const EMAIL_ADDRESS = "budi01@gmail.com";
 
 export default function UserManage() {
   const userData: User[] = [

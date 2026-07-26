@@ -19,7 +19,7 @@ const events = Array(6).fill({
   title: "PHBN 2025",
   description:
     "Hari Besar Nasional, event kemerdekaan SMK Bhakti Wiyata & SMK TI Pelita Nusantara",
-  link: "https://example.com/event1",
+  link: "/event/PHBN-2025",
 });
 
 export default function EventPage() {

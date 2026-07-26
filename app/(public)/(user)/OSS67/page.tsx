@@ -7,49 +7,37 @@ export default function OSS67Page() {
       initial: "Sekbid 1",
       standFor: "Divisi Iman & Taqwa",
       desc: "Membina keimanan dan ketakwaan siswa",
-      img: "/images/foto-osis.JPG",
+      img: "/images/seksi-bidang/Sekbid1.JPG",
     },
     {
       initial: "Sekbid 2",
       standFor: "Divisi Tata Tertib",
       desc: "Mengawasi kedisiplinan dan tata tertib sekolah",
-      img: "/images/foto-osis.JPG",
+      img: "/images/seksi-bidang/Sekbid2.JPG",
     },
     {
       initial: "Sekbid 3",
       standFor: "Divisi Kepribadian & Berbudi Pekerti Luhur",
       desc: "Membentuk karakter dan budi pekerti siswa",
-      img: "/images/foto-osis.JPG",
+      img: "/images/seksi-bidang/Sekbid3.JPG",
     },
     {
       initial: "Sekbid 4",
       standFor: "Divisi Apresiasi Seni & Budaya",
       desc: "Mengembangkan bakat seni dan budaya siswa",
-      img: "/images/foto-osis.JPG",
+      img: "/images/seksi-bidang/Sekbid4.JPG",
     },
     {
       initial: "Sekbid 5",
       standFor: "Divisi Teknologi Informasi",
       desc: "Meningkatkan literasi digital dan inovasi siswa",
-      img: "/images/foto-osis.JPG",
+      img: "/images/seksi-bidang/Sekbid5.JPG",
     },
     {
       initial: "Sekbid 6",
       standFor: "Divisi Apresiasi Olahraga & Kesehatan",
       desc: "Membina minat olahraga dan gaya hidup sehat",
-      img: "/images/foto-osis.JPG",
-    },
-    {
-      initial: "Sekbid 7",
-      standFor: "Divisi Analisis & Wawasan Politik",
-      desc: "Melatih wawasan dan berpikir kritis politik",
-      img: "/images/foto-osis.JPG",
-    },
-    {
-      initial: "Sekbid 8",
-      standFor: "Divisi Hubungan Masyarakat",
-      desc: "Membangun komunikasi dan relasi antar warga sekolah",
-      img: "/images/foto-osis.JPG",
+      img: "/images/seksi-bidang/Sekbid6.JPG",
     },
   ];
   return (
@@ -135,7 +123,7 @@ export default function OSS67Page() {
           </h3>
           <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-all duration-700 group-hover:opacity-100" />
           <img
-            src="/images/foto-osis.JPG"
+            src="/images/seksi-bidang/BPH.JPG"
             alt="OSS67 Activities"
             className="h-60 w-[720px] object-cover object-center grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
           />
@@ -172,7 +160,26 @@ export default function OSS67Page() {
                 </p>
               </div>
             </FadeInSection>
-          ))}
+          ))} 
+        </div>
+         <div className="group relative inline-block cursor-pointer overflow-hidden rounded-xl mt-6">
+          <h3 className="absolute left-1/2 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 text-5xl md:text-6xl text-center font-black text-white transition-all duration-700 ease-out group-hover:scale-75 group-hover:opacity-0 group-hover:blur-sm">
+            Sekbid 7
+          </h3>
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-all duration-700 group-hover:opacity-100" />
+          <img
+            src="/images/seksi-bidang/Sekbid7.png"
+            alt="OSS67 Activities"
+            className="h-60 w-[720px] object-cover object-center grayscale transition-all duration-700 ease-out group-hover:scale-110 group-hover:grayscale-0"
+          />
+          <div className="absolute bottom-4 left-6 z-20 translate-y-4 opacity-0 transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100">
+            <h4 className="text-lg sm:text-xl md:text-2xl font-bold text-white select-none">
+              Divisi Kewirausahaan
+            </h4>
+            <p className="text-sm text-white/80 select-none">
+              Mengembangkan jiwa wirausaha dan inovasi
+            </p>
+          </div>
         </div>
       </section>
     </div>

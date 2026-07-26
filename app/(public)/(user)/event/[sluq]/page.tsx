@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogleDrive } from "@fortawesome/free-brands-svg-icons";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
-import { MoveLeft, MoveRight, Radio } from "lucide-react";
+import { Calendar, Clock, MapPin, MoveLeft, MoveRight, Radio, Tag, Timer } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function EventDetail({
@@ -23,7 +23,7 @@ export default function EventDetail({
     title: string;
     description: string;
   }) => (
-    <div className="flex items-start gap-4 py-4 border-b border-border last:border-0">
+    <div className="flex items-start gap-4 py-4 last:border-0">
       <div className="flex-shrink-0 h-9 w-9 rounded-xl bg-muted flex items-center justify-center text-foreground/70">
         {icon}
       </div>
@@ -144,6 +144,35 @@ export default function EventDetail({
                     icon={<FontAwesomeIcon icon={faCalendar} />}
                     title="Tanggal"
                     description="10 Agustus 2025"
+                  />
+                    <ItemCard
+                    icon={<Calendar className="h-5 w-5" />}
+                    title="Tanggal"
+                    description="17–19 Mei 2026"
+                  />
+
+                  <ItemCard
+                    icon={<Clock className="h-5 w-5" />}
+                    title="Jam"
+                    description="07.00 - 15.00"
+                  />
+
+                  <ItemCard
+                    icon={<Timer className="h-5 w-5" />}
+                    title="Lama Penyelenggaraan"
+                    description="2 Hari"
+                  />
+
+                  <ItemCard
+                    icon={<MapPin className="h-5 w-5" />}
+                    title="Lokasi"
+                    description="Auditorium LT 4"
+                  />
+
+                  <ItemCard
+                    icon={<Tag className="h-5 w-5" />}
+                    title="Kategori"
+                    description="Islami"
                   />
                 </div>
               </div>
