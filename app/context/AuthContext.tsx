@@ -1,3 +1,5 @@
+"use client";
+
 import {
   createContext,
   useContext,
@@ -5,12 +7,15 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import type { AuthData } from "../types/userType";
+import { AuthData, User } from "@/app/types/userType";
 
 type AuthContextType = {
   auth: AuthData | null;
+  user: User | null;
+  token: string | null;
   login: (data: AuthData) => void;
   logout: () => void;
+  isAuthenticated: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -24,8 +29,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const stored = localStorage.getItem("auth");
     if (stored) {
       try {
-        setAuth(JSON.parse(stored));
-      } catch {
+        const parsed: AuthData = JSON.parse(stored);
+        setAuth(parsed);
+      } catch (error) {
+        console.error("Failed to parse auth:", error);
         localStorage.removeItem("auth");
       }
     }
@@ -41,15 +48,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuth(null);
   };
 
-  if (!isMounted) {
-    return null;
-  }
 
   return (
-    <AuthContext.Provider value={{ auth, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        auth,
+        user: auth?.user || null,
+        token: auth?.token || null,
+        login,
+        logout,
+        isAuthenticated: !!auth?.token,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
-export const useAuth = () => useContext(AuthContext)!;
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
+};

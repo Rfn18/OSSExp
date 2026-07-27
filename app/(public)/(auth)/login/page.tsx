@@ -2,23 +2,50 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, Mail, Lock, AlertCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import api from "@/app/services/api";
+import { useAuth } from "@/app/context/AuthContext";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const isValid = email.trim() && password.trim();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isValid) return;
+
     setLoading(true);
-    // TODO: POST /api/auth/login
-    setTimeout(() => setLoading(false), 800);
+    setError(null);
+
+    try {
+      const response = await api.post("/login", {
+        email: email.trim(),
+        password: password,
+      });
+      const { token, user, expires_in, token_type } = response?.data?.data;
+
+      login({ token, user, expires_in, token_type });
+
+      router.push("/admin");
+    } catch (err: any) {
+      const errorMessage =
+        err.response?.data?.message ||
+        "Email atau password salah. Silakan coba lagi.";
+
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -32,6 +59,23 @@ export default function LoginPage() {
         </p>
       </div>
 
+      {/* Error Alert */}
+      {error && (
+        <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-800">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-semibold">Login Gagal</p>
+            <p className="text-sm mt-0.5 opacity-80">{error}</p>
+          </div>
+          <button
+            onClick={() => setError(null)}
+            className="text-red-600 hover:text-red-700 p-1"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -42,10 +86,14 @@ export default function LoginPage() {
             <input
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError(null); // Clear error saat user mulai mengetik
+              }}
               placeholder="nama@email.com"
               autoFocus
-              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20 focus:border-[#1e3a8a]"
+              disabled={loading}
+              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20 focus:border-[#1e3a8a] disabled:opacity-50"
             />
           </div>
         </div>
@@ -67,15 +115,20 @@ export default function LoginPage() {
             <input
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError(null); // Clear error saat user mulai mengetik
+              }}
               placeholder="Masukkan password"
-              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20 focus:border-[#1e3a8a]"
+              disabled={loading}
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20 focus:border-[#1e3a8a] disabled:opacity-50"
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
               tabIndex={-1}
+              disabled={loading}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
@@ -87,7 +140,33 @@ export default function LoginPage() {
           disabled={!isValid || loading}
           className="w-full bg-gradient font-semibold text-white hover:opacity-90 transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed h-11 rounded-full mt-2"
         >
-          {loading ? "Memproses..." : "Masuk"}
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <svg
+                className="animate-spin w-4 h-4"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Memproses...
+            </span>
+          ) : (
+            "Masuk"
+          )}
         </Button>
       </form>
 
@@ -97,7 +176,10 @@ export default function LoginPage() {
         <div className="flex-1 h-px bg-gray-100" />
       </div>
 
-      <button className="w-full flex items-center justify-center gap-2.5 h-11 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-semibold text-gray-700">
+      <button
+        disabled={loading}
+        className="w-full flex items-center justify-center gap-2.5 h-11 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors text-sm font-semibold text-gray-700 disabled:opacity-50"
+      >
         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden>
           <path
             fill="#4285F4"

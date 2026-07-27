@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import useSWR from "swr";
 import { CardEvent } from "@/components/card-event";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,8 @@ import {
   RotateCcw,
   Check,
   Users,
+  Loader2,
+  CalendarX,
 } from "lucide-react";
 import {
   Pagination,
@@ -32,33 +35,143 @@ import {
 } from "@/components/ui/pagination";
 import { useRouter } from "next/navigation";
 import { DashboardHeader } from "@/components/admin/dashboardHeader";
+import api from "@/app/services/api";
+import { useAuth } from "@/app/context/AuthContext";
+import { Category, EventFormValues } from "@/app/types/eventType";
+import { User } from "@/app/types/userType";
 
-const MOCK_USERS = [
-  { id: 1, name: "Budi Santoso" },
-  { id: 2, name: "Siti Aminah" },
-  { id: 3, name: "Ahmad Fauzi" },
-  { id: 4, name: "Dewi Lestari" },
-];
+interface PaginationMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+  from: number;
+  to: number;
+}
+
+// ─── Custom Hooks ──────────────────────────────────────────────────────────
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+}
+
+// Fetcher yang return data + meta (khusus untuk pagination)
+const paginatedFetcher = async (url: string) => {
+  const response = await api.get(url);
+  const result = response.data;
+  return {
+    data: result.data ?? [],
+    meta: result.meta ?? null,
+  };
+};
+
+const simpleFetcher = (url: string) =>
+  api.get(url).then((res) => res.data.data ?? []);
+
+// ─── Helper ────────────────────────────────────────────────────────────────
+function formatDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
 
 export default function EventManagement() {
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const router = useRouter();
+  const { user, isAuthenticated } = useAuth();
+  const isAdmin = user?.role?.guard_name === "admin";
 
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const perPage = 8;
+
+  // Filter states
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [sortFilter, setSortFilter] = useState("all");
-  const [userFilter, setUserFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [sortFilter, setSortFilter] = useState<string>("all");
+  const [userFilter, setUserFilter] = useState<string>("all");
+
+  // Draft filter (diapply saat user klik "Terapkan")
+  const [draftStatus, setDraftStatus] = useState(statusFilter);
+  const [draftCategory, setDraftCategory] = useState(categoryFilter);
+  const [draftSort, setDraftSort] = useState(sortFilter);
+  const [draftUser, setDraftUser] = useState(userFilter);
+
+  const debouncedSearch = useDebounce(searchQuery, 500);
+
+  const queryParams = useMemo(() => {
+    const params = new URLSearchParams();
+    params.set("page", String(currentPage));
+    params.set("per_page", String(perPage));
+
+    if (debouncedSearch) params.set("search", debouncedSearch);
+    if (statusFilter !== "all") params.set("status", statusFilter);
+    if (categoryFilter !== "all") params.set("category_id", categoryFilter);
+    if (userFilter !== "all") params.set("user_id", userFilter);
+
+    if (sortFilter === "newest") params.set("sort", "-created_at");
+    else if (sortFilter === "oldest") params.set("sort", "created_at");
+    else if (sortFilter === "name_asc") params.set("sort", "title");
+    else if (sortFilter === "name_desc") params.set("sort", "-title");
+
+    return params.toString();
+  }, [
+    currentPage,
+    debouncedSearch,
+    statusFilter,
+    categoryFilter,
+    userFilter,
+    sortFilter,
+  ]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, statusFilter, categoryFilter, userFilter, sortFilter]);
+
+  const {
+    data: eventsResponse,
+    isLoading: isEventsLoading,
+    error: eventsError,
+    mutate: mutateEvents,
+  } = useSWR(
+    isAuthenticated ? `/events?${queryParams}` : null,
+    paginatedFetcher,
+  );
+
+  const { data: categories = [] } = useSWR<Category[]>(
+    isAuthenticated ? "/event-categories" : null,
+    simpleFetcher,
+  );
+
+  const { data: users = [] } = useSWR<User[]>(
+    isAuthenticated && isAdmin ? "/users" : null,
+    simpleFetcher,
+  );
+
+  const events: EventFormValues[] = eventsResponse?.data?.data ?? [];
+  const meta: PaginationMeta | null = eventsResponse?.meta ?? null;
+
+  const imageUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUD_NAME}/image/upload/`;
 
   const activeFilterCount = [
     statusFilter !== "all",
     categoryFilter !== "all",
     sortFilter !== "all",
     userFilter !== "all",
-    searchQuery !== "",
+    debouncedSearch !== "",
   ].filter(Boolean).length;
 
   const handleReset = () => {
+    setDraftStatus("all");
+    setDraftCategory("all");
+    setDraftSort("all");
+    setDraftUser("all");
     setSearchQuery("");
     setStatusFilter("all");
     setCategoryFilter("all");
@@ -67,29 +180,49 @@ export default function EventManagement() {
   };
 
   const handleApply = () => {
+    setStatusFilter(draftStatus);
+    setCategoryFilter(draftCategory);
+    setSortFilter(draftSort);
+    setUserFilter(draftUser);
     setIsFilterOpen(false);
   };
 
-  const events = Array(8).fill({
-    status: "ongoing" as const,
-    imgSrc: "https://picsum.photos/seed/event/530/300",
-    date: "18 April 2025",
-    category: "Olahraga",
-    title: "PHBN 2025",
-    description:
-      "Hari Besar Nasional, event kemerdekaan SMK Bhakti Wiyata & SMK TI Pelita Nusantara",
-    link: "https://example.com/event1",
-  });
+  const handleOpenFilter = () => {
+    setDraftStatus(statusFilter);
+    setDraftCategory(categoryFilter);
+    setDraftSort(sortFilter);
+    setDraftUser(userFilter);
+    setIsFilterOpen(true);
+  };
+
+  const paginationNumbers = useMemo(() => {
+    if (!meta) return [];
+    const pages: (number | "ellipsis")[] = [];
+    const current = meta.current_page;
+    const total = meta.last_page;
+
+    if (total <= 7) {
+      for (let i = 1; i <= total; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (current > 3) pages.push("ellipsis");
+
+      const start = Math.max(2, current - 1);
+      const end = Math.min(total - 1, current + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+
+      if (current < total - 2) pages.push("ellipsis");
+      pages.push(total);
+    }
+    return pages;
+  }, [meta]);
 
   return (
     <>
-      <div
-        className="flex flex-col sm:flex-row sm:items-center
-      justify-between gap-1 mb-7 w-full"
-      >
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-7 w-full">
         <DashboardHeader
           title="Event Management"
-          description="Menu event management"
+          description="Kelola semua event organisasi kamu"
         />
         <div className="w-full flex flex-col justify-end sm:items-end">
           <Button
@@ -101,31 +234,37 @@ export default function EventManagement() {
           </Button>
         </div>
       </div>
+
+      {/* ─── Filter Bar ─────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 p-4 rounded-2xl border border-border bg-muted/30">
-        <p className="text-sm font-semibold text-foreground flex-shrink-0 flex items-center gap-1.5">
+        <p className="text-sm font-semibold text-foreground flex-shrink-0 flex items-center gap-1.5 mb-3 sm:mb-0">
           <SlidersHorizontal size={14} className="text-muted-foreground" />
-          <span className="text-primary-blue">9</span> Event Ditemukan
+          {isEventsLoading ? (
+            <Loader2 size={14} className="animate-spin text-primary-blue" />
+          ) : (
+            <span className="text-primary-blue">{meta?.total ?? 0}</span>
+          )}
+          <span>Event Ditemukan</span>
         </p>
+
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
-          <div className="w-full sm:w-auto">
-            <div className="relative">
-              <Search
-                size={14}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-              />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari nama event..."
-                className="pl-9 h-10 text-sm rounded-xl"
-              />
-            </div>
+          <div className="w-full sm:w-auto relative">
+            <Search
+              size={14}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+            />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari nama event..."
+              className="pl-9 h-10 text-sm rounded-xl"
+            />
           </div>
 
           <Button
-            onClick={() => setIsFilterOpen(true)}
+            onClick={handleOpenFilter}
             variant="outline"
-            className="relative h-9 px-4 rounded-xl gap-2 border-border hover:bg-muted/50 w-full sm:w-auto"
+            className="relative h-10 px-4 rounded-xl gap-2 border-border hover:bg-muted/50 w-full sm:w-auto"
           >
             <SlidersHorizontal size={14} className="text-primary-blue" />
             <span className="font-medium text-sm">Filter</span>
@@ -138,67 +277,165 @@ export default function EventManagement() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
-        {events.map((event, index) => (
-          <CardEvent
-            key={index}
-            imgSrc={event.imgSrc}
-            date={event.date}
-            category={event.category}
-            title={event.title}
-            description={event.description}
-            status={event.status}
-          />
-        ))}
-      </div>
+      {/* ─── Loading State ──────────────────────────────────────────────── */}
+      {isEventsLoading && events.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-20">
+          <Loader2 className="w-10 h-10 animate-spin text-primary-blue mb-4" />
+          <p className="text-sm text-muted-foreground">Memuat event...</p>
+        </div>
+      )}
 
-      <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-border">
-        <p className="w-full text-sm text-muted-foreground text-center sm:text-left">
-          Menampilkan <span className="font-semibold text-foreground">1</span> –{" "}
-          <span className="font-semibold text-foreground">6</span> dari{" "}
-          <span className="font-semibold text-foreground">9</span> event
-        </p>
+      {/* ─── Error State ────────────────────────────────────────────────── */}
+      {eventsError && !isEventsLoading && (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mb-4">
+            <X className="w-8 h-8 text-red-500" />
+          </div>
+          <p className="text-sm font-semibold text-foreground mb-1">
+            Gagal memuat event
+          </p>
+          <p className="text-xs text-muted-foreground mb-4">
+            {(eventsError as Error).message || "Terjadi kesalahan pada server"}
+          </p>
+          <Button
+            onClick={() => mutateEvents()}
+            variant="outline"
+            className="gap-2"
+          >
+            <RotateCcw size={14} />
+            Coba Lagi
+          </Button>
+        </div>
+      )}
 
-        <Pagination className="mx-0 sm:justify-end">
-          <PaginationContent className="gap-1">
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                className="rounded-xl h-9 px-3 text-sm"
+      {/* ─── Empty State ────────────────────────────────────────────────── */}
+      {!isEventsLoading && !eventsError && events.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
+            <CalendarX className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <p className="text-sm font-semibold text-foreground mb-1">
+            Tidak ada event ditemukan
+          </p>
+          <p className="text-xs text-muted-foreground mb-4 max-w-sm">
+            {activeFilterCount > 0
+              ? "Coba ubah filter atau reset pencarian untuk melihat event lainnya."
+              : "Belum ada event yang dibuat. Klik tombol Create Event untuk memulai."}
+          </p>
+          {activeFilterCount > 0 ? (
+            <Button onClick={handleReset} variant="outline" className="gap-2">
+              <RotateCcw size={14} />
+              Reset Filter
+            </Button>
+          ) : (
+            <Button
+              onClick={() => router.push("/admin/event/create")}
+              className="gap-2 bg-gradient"
+            >
+              <Plus size={14} />
+              Buat Event Pertama
+            </Button>
+          )}
+        </div>
+      )}
+
+      {/* ─── Events Grid ────────────────────────────────────────────────── */}
+      {!isEventsLoading && !eventsError && events.length > 0 && (
+        <>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
+            {events.map((event) => (
+              <CardEvent
+                key={event.id}
+                imgSrc={`${imageUrl}${event.cover_image}`}
+                date={formatDate(event.start_date)}
+                category={event.category?.name || "Tanpa Kategori"}
+                title={event.title}
+                description={event.description}
+                status={event.status}
               />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" className="rounded-xl h-9 w-9 text-sm">
-                1
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink
-                href="#"
-                isActive
-                className="rounded-xl h-9 w-9 text-sm"
-              >
-                2
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" className="rounded-xl h-9 w-9 text-sm">
-                3
-              </PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                className="rounded-xl h-9 px-3 text-sm"
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+            ))}
+          </div>
 
+          {/* ─── Pagination ─────────────────────────────────────────────── */}
+          {meta && meta.last_page > 1 && (
+            <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-border">
+              <p className="w-full text-sm text-muted-foreground text-center sm:text-left">
+                Menampilkan{" "}
+                <span className="font-semibold text-foreground">
+                  {meta.from}
+                </span>{" "}
+                –{" "}
+                <span className="font-semibold text-foreground">{meta.to}</span>{" "}
+                dari{" "}
+                <span className="font-semibold text-foreground">
+                  {meta.total}
+                </span>{" "}
+                event
+              </p>
+
+              <Pagination className="mx-0 sm:justify-end">
+                <PaginationContent className="gap-1">
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (meta.current_page > 1)
+                          setCurrentPage(meta.current_page - 1);
+                      }}
+                      className={`rounded-xl h-9 px-3 text-sm ${
+                        meta.current_page === 1
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }`}
+                    />
+                  </PaginationItem>
+
+                  {paginationNumbers.map((page, idx) =>
+                    page === "ellipsis" ? (
+                      <PaginationItem key={`ellipsis-${idx}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(page as number);
+                          }}
+                          isActive={page === meta.current_page}
+                          className="rounded-xl h-9 w-9 text-sm"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ),
+                  )}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (meta.current_page < meta.last_page)
+                          setCurrentPage(meta.current_page + 1);
+                      }}
+                      className={`rounded-xl h-9 px-3 text-sm ${
+                        meta.current_page === meta.last_page
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }`}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ─── Filter Modal ───────────────────────────────────────────────── */}
       {isFilterOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
           <div
@@ -228,7 +465,7 @@ export default function EventManagement() {
                   <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
                     Status
                   </label>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <Select value={draftStatus} onValueChange={setDraftStatus}>
                     <SelectTrigger className="h-10 text-sm rounded-xl">
                       <SelectValue placeholder="Pilih status" />
                     </SelectTrigger>
@@ -237,7 +474,8 @@ export default function EventManagement() {
                         <SelectItem value="all">Semua</SelectItem>
                         <SelectItem value="ongoing">Berlangsung</SelectItem>
                         <SelectItem value="upcoming">Akan Datang</SelectItem>
-                        <SelectItem value="past">Selesai</SelectItem>
+                        <SelectItem value="completed">Selesai</SelectItem>
+                        <SelectItem value="cancelled">Dibatalkan</SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -248,8 +486,8 @@ export default function EventManagement() {
                     Kategori
                   </label>
                   <Select
-                    value={categoryFilter}
-                    onValueChange={setCategoryFilter}
+                    value={draftCategory}
+                    onValueChange={setDraftCategory}
                   >
                     <SelectTrigger className="h-10 text-sm rounded-xl">
                       <SelectValue placeholder="Pilih kategori" />
@@ -257,43 +495,47 @@ export default function EventManagement() {
                     <SelectContent>
                       <SelectGroup>
                         <SelectItem value="all">Semua</SelectItem>
-                        <SelectItem value="islami">Islami</SelectItem>
-                        <SelectItem value="olahraga">Olahraga</SelectItem>
-                        <SelectItem value="pendidikan">Pendidikan</SelectItem>
-                        <SelectItem value="seni">Seni & Budaya</SelectItem>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={String(cat.id)}>
+                            {cat.name}
+                          </SelectItem>
+                        ))}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <Users size={12} />
-                  Dibuat Oleh (User)
-                </label>
-                <Select value={userFilter} onValueChange={setUserFilter}>
-                  <SelectTrigger className="h-10 text-sm rounded-xl">
-                    <SelectValue placeholder="Pilih user" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="all">Semua User</SelectItem>
-                      {MOCK_USERS.map((user) => (
-                        <SelectItem key={user.id} value={user.id.toString()}>
-                          {user.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Filter by User (hanya untuk admin) */}
+              {isAdmin && (
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Users size={12} />
+                    Dibuat Oleh (User)
+                  </label>
+                  <Select value={draftUser} onValueChange={setDraftUser}>
+                    <SelectTrigger className="h-10 text-sm rounded-xl">
+                      <SelectValue placeholder="Pilih user" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="all">Semua User</SelectItem>
+                        {users.map((u) => (
+                          <SelectItem key={u.id} value={String(u.id)}>
+                            {u.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">
                   Urutkan
                 </label>
-                <Select value={sortFilter} onValueChange={setSortFilter}>
+                <Select value={draftSort} onValueChange={setDraftSort}>
                   <SelectTrigger className="h-10 text-sm rounded-xl">
                     <SelectValue placeholder="Urutkan berdasarkan" />
                   </SelectTrigger>

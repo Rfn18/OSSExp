@@ -46,7 +46,6 @@ export default function RegisterPage() {
     e.preventDefault();
     if (!isValid) return;
     setLoading(true);
-    // TODO: POST /api/auth/register lalu kirim OTP ke email
     setTimeout(() => {
       setLoading(false);
       router.push(`/verify-email?email=${encodeURIComponent(email)}`);

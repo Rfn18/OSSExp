@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { MoveRight, CalendarDays, Tag, ImageOff } from "lucide-react";
 import { statusConfig } from "@/lib/statusConfig";
+import { EventStatus } from "@/app/types/eventType";
 
 export function CardEvent({
   status,
@@ -21,7 +22,7 @@ export function CardEvent({
   description,
   link,
 }: {
-  status?: "ongoing" | "upcoming" | "past";
+  status?: EventStatus;
   imgSrc?: string;
   date?: string;
   category?: string;

@@ -1,6 +1,7 @@
 export type EventStatus = "completed" | "ongoing" | "upcoming" | "cancelled";
 
 export interface EventFormValues {
+  id: number;
   title: string;
   slug: string;
   description: string;
@@ -12,10 +13,12 @@ export interface EventFormValues {
   link: string;
   status: EventStatus;
   is_repeat: boolean;
-  event_category_id: string;
+  cover_image?: string;
+  category: Category;
 }
 
 export interface Category {
   id: string;
   name: string;
+  description: string;
 }

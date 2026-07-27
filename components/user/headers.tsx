@@ -4,6 +4,7 @@ import { User as UserType } from "@/app/types/userType";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   DropdownItem,
   NavTooltip,
@@ -22,20 +23,7 @@ import {
   IcLogout,
   IcClose,
 } from "../ui/icon";
-
-const MOCK_USER: UserType | null = {
-  id: "1",
-  name: "Budi Santoso",
-  email: "budi@gmail.com",
-  role_id: "1",
-  role: {
-    id: "1",
-    name: "Ketua OSIS",
-    guard_name: "admin",
-  },
-  is_active: true,
-  profile_picture: null,
-};
+import { useAuth } from "@/app/context/AuthContext";
 
 const NAV_LINKS = [
   { href: "/OSS67", label: "About OSS67", icon: <IcUsers /> },
@@ -102,15 +90,52 @@ function sampleBgIsDark(headerEl: HTMLElement | null): boolean {
 }
 
 export default function Headers() {
+  const router = useRouter();
+  const { auth, logout } = useAuth(); // Ambil data user dari AuthContext
+
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [isDark, setIsDark] = useState(true);
 
-  const [user] = useState<UserType | null>(MOCK_USER);
-
   const headerRef = useRef<HTMLElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  // Convert auth data to UserType format
+  const user: UserType | null = auth?.user
+    ? {
+        id: String(auth.user.id),
+        name: auth.user.name,
+        email: auth.user.email,
+        role_id: String(auth.user.role_id || "2"),
+        role: auth.user.role || {
+          id: "2",
+          name: "User",
+          guard_name: "user",
+        },
+        is_active: true,
+        profile_picture: auth.user.profile_picture || null,
+      }
+    : null;
+
+  const handleLogout = async () => {
+    try {
+      // Panggil API logout jika ada (opsional)
+      // await api.post('/auth/logout');
+
+      // Hapus token dari context dan localStorage
+      logout();
+
+      // Tutup dropdown dan drawer
+      setProfileOpen(false);
+      setDrawerOpen(false);
+
+      // Redirect ke halaman login
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -218,6 +243,7 @@ export default function Headers() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {/* Tampilkan tombol Sign In/Sign Up jika belum login */}
           {!user && (
             <div className="hidden sm:flex items-center gap-2">
               <Link href="/login">
@@ -240,6 +266,7 @@ export default function Headers() {
             </div>
           )}
 
+          {/* Tampilkan profile dropdown jika sudah login */}
           {user && (
             <div ref={profileRef} className="relative hidden md:block">
               <button
@@ -310,7 +337,7 @@ export default function Headers() {
                 </div>
                 <div className="pb-1.5 pt-0 border-t border-zinc-100 dark:border-zinc-800">
                   <button
-                    onClick={() => {}}
+                    onClick={handleLogout}
                     className="flex w-full items-center gap-3 px-4 py-2.5 text-sm
                       text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10
                       transition-colors duration-150"
@@ -419,7 +446,7 @@ export default function Headers() {
         >
           {user && (
             <>
-              {/* Profile popover — transition-all duration-300 (mengikuti pola referensi) */}
+              {/* Profile popover */}
               <div
                 className={`absolute bottom-full left-2 right-2 mb-2
                 bg-white rounded-xl border border-gray-100 shadow-xl shadow-black/8
@@ -444,19 +471,19 @@ export default function Headers() {
                 </div>
                 <div className="py-1">
                   <ProfileAction
-                    href="/admin/profile"
+                    href="/profile"
                     icon={<User size={14} />}
                     label="Lihat Profil"
                   />
                   <ProfileAction
-                    href="/admin/settings"
+                    href="/settings"
                     icon={<Settings size={14} />}
                     label="Pengaturan Akun"
                   />
                 </div>
                 <div className="border-t border-gray-100 py-1">
                   <button
-                    onClick={() => {}}
+                    onClick={handleLogout}
                     className="flex w-full items-center gap-3 px-4 py-2.5 text-sm
                     text-red-500 hover:bg-red-50 transition-colors duration-150"
                   >
@@ -474,9 +501,7 @@ export default function Headers() {
                   `}
                 >
                   <UserAvatar user={user} initials={initials} size="sm" />
-                  <div
-                    className={`min-w-0 flex-1 transition-opacity duration-300opacity-100" : "opacity-0 w-0 overflow-hidden"}`}
-                  >
+                  <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-gray-900 truncate leading-tight">
                       {user.name}
                     </p>

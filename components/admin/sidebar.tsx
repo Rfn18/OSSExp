@@ -17,26 +17,12 @@ import {
   LogOut,
 } from "lucide-react";
 import { useLayout } from "@/app/context/LayoutContext";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { User as UserType } from "@/app/types/userType";
 import { NavTooltip, ProfileAction, UserAvatar } from "../ui/profile";
-
-const MOCK_USER: UserType | null = {
-  id: "1",
-  name: "Budi Santoso",
-  email: "budi@gmail.com",
-  role_id: "1",
-  role: {
-    id: "1",
-    name: "Ketua OSIS",
-    guard_name: "admin",
-  },
-  is_active: true,
-  profile_picture: null,
-};
-
+import { useAuth } from "@/app/context/AuthContext";
 const EASE = {
   out: "cubic-bezier(0.25,1,0.5,1)",
   in: "cubic-bezier(0.5,0,0.75,0)",
@@ -183,12 +169,48 @@ function NotifIcon({ type }: { type: string }) {
 
 export function SidebarLeft() {
   const { isSidebarLeftOpen } = useLayout();
+  const router = useRouter();
+  const { auth, logout } = useAuth();
+
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const pathname = usePathname();
-  const user = MOCK_USER;
 
   const profileRef = useRef<HTMLDivElement>(null);
+
+  // Convert auth data to UserType format
+  const user: UserType | null = auth?.user
+    ? {
+        id: String(auth.user.id),
+        name: auth.user.name,
+        email: auth.user.email,
+        role_id: String(auth.user.role_id || "2"),
+        role: auth.user.role || {
+          id: "2",
+          name: "User",
+          guard_name: "user",
+        },
+        is_active: true,
+        profile_picture: auth.user.profile_picture || null,
+      }
+    : null;
+
+  const handleLogout = async () => {
+    try {
+      // Panggil API logout jika ada (opsional)
+      // await api.post('/auth/logout');
+
+      // Hapus token dari context dan localStorage
+      logout();
+
+      // Tutup popover
+      setProfileOpen(false);
+
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   const isActive = (path: string | undefined) => {
     if (!path) return false;
@@ -347,7 +369,7 @@ export function SidebarLeft() {
       >
         {user && (
           <>
-            {/* Profile popover — transition-all duration-300 (mengikuti pola referensi) */}
+            {/* Profile popover */}
             <div
               className={`absolute bottom-full left-2 right-2 mb-2
                 bg-white rounded-xl border border-gray-100 shadow-xl shadow-black/8
@@ -384,7 +406,7 @@ export function SidebarLeft() {
               </div>
               <div className="border-t border-gray-100 py-1">
                 <button
-                  onClick={() => {}}
+                  onClick={handleLogout}
                   className="flex w-full items-center gap-3 px-4 py-2.5 text-sm
                     text-red-500 hover:bg-red-50 transition-colors duration-150"
                 >
