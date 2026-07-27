@@ -11,11 +11,10 @@ export default function AdminLayout({
 }>) {
   const defaultBgColor = "#F8FAFE";
   
-  // 1. PASTIKAN ANDA MENGAMBIL FUNGSI SETTER DARI CONTEXT
   const { 
     isSidebarLeftOpen, 
     isSidebarRightOpen, 
-    setIsSidebarLeftOpen // <--- TAMBAHKAN INI (Sesuaikan dengan nama di Context Anda)
+    setIsSidebarLeftOpen 
   } = useLayout();
 
   const sidebarClass = isSidebarLeftOpen

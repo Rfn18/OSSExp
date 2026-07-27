@@ -67,13 +67,6 @@ export default function EventManagement() {
   };
 
   const handleApply = () => {
-    console.log("Filter diterapkan:", {
-      searchQuery,
-      statusFilter,
-      categoryFilter,
-      sortFilter,
-      userFilter,
-    });
     setIsFilterOpen(false);
   };
 

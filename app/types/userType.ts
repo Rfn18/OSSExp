@@ -13,3 +13,11 @@ export interface User {
   role?: Role;
   is_active: boolean;
 }
+
+export type AuthData = {
+  token: string;
+  user: User;
+  role: Role;
+  message: string;
+  status: string;
+};

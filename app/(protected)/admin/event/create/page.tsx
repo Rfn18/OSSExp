@@ -15,21 +15,9 @@ import {
   Tag,
   Activity,
 } from "lucide-react";
-
-interface EventFormValues {
-  title: string;
-  slug: string;
-  description: string;
-  location: string;
-  start_date: string;
-  end_date: string;
-  start_time: string;
-  end_time: string;
-  link: string;
-  status: "upcoming" | "ongoing" | "completed" | "cancelled";
-  is_repeat: boolean;
-  event_category_id: string;
-}
+import { EventFormValues } from "@/app/types/eventType";
+import api from "@/app/services/api";
+import useSWR from "swr";
 
 type NotificationType = "success" | "error" | null;
 
@@ -38,7 +26,6 @@ interface Notification {
   message: string;
 }
 
-// ─── Notification Toast ───────────────────────────────────────────────────────
 function Toast({
   notification,
   onClose,
@@ -86,7 +73,6 @@ function Toast({
   );
 }
 
-// ─── Field Wrapper ────────────────────────────────────────────────────────────
 function Field({
   label,
   required,
@@ -121,7 +107,6 @@ function Field({
   );
 }
 
-// ─── Input Classes ────────────────────────────────────────────────────────────
 const inputCls =
   "w-full px-3.5 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-400 " +
   "focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500 " +
@@ -131,7 +116,6 @@ const readonlyCls =
   "w-full px-3.5 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-500 " +
   "focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-400 transition duration-150";
 
-// ─── Section Card ─────────────────────────────────────────────────────────────
 function SectionCard({
   title,
   step,
@@ -157,12 +141,21 @@ function SectionCard({
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
 export default function CreateEvent() {
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  const fetcher = (url: string) => api.get(url).then((res) => res.data);
+
+  const {
+    data: categoriesResponse,
+    isLoading: isCategoriesLoading,
+    error: categoriesError,
+  } = useSWR("/event-categories", fetcher);
+
+  const categories = categoriesResponse?.data?.data || categoriesResponse || [];
 
   const {
     register,
@@ -173,14 +166,6 @@ export default function CreateEvent() {
   } = useForm<EventFormValues>({
     defaultValues: { status: "upcoming", is_repeat: false },
   });
-
-  const categories = [
-    { id: "1", name: "Conference" },
-    { id: "2", name: "Webinar" },
-    { id: "3", name: "Workshop" },
-    { id: "4", name: "Meetup" },
-    { id: "5", name: "Festival" },
-  ];
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
@@ -213,24 +198,39 @@ export default function CreateEvent() {
 
   const onSubmit = async (data: EventFormValues) => {
     try {
-      // Simulate API call
-      await new Promise<void>((resolve, reject) =>
-        setTimeout(() => {
-          // Simulate random success/failure for demo
-          Math.random() > 0.3 ? resolve() : reject(new Error("Server error"));
-        }, 1200),
-      );
+      const formData = new FormData();
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          if (key === "is_repeat") {
+            formData.append(key, value ? "1" : "0");
+          } else {
+            formData.append(key, String(value));
+          }
+        }
+      });
+
+      if (coverImage) {
+        formData.append("cover_image", coverImage);
+      }
+      await api.post("/events", formData);
+
       setNotification({
         type: "success",
         message: "Event berhasil ditambahkan ke sistem.",
       });
+
       reset();
       setCoverPreview(null);
       setCoverImage(null);
-    } catch {
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Gagal menyimpan event. Periksa koneksi dan coba lagi.";
+
       setNotification({
         type: "error",
-        message: "Gagal menyimpan event. Periksa koneksi dan coba lagi.",
+        message: errorMessage,
       });
     }
   };
@@ -244,13 +244,6 @@ export default function CreateEvent() {
 
   return (
     <>
-      <style>{`
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateX(1rem); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-      `}</style>
-
       {notification && (
         <Toast
           notification={notification}
@@ -450,13 +443,23 @@ export default function CreateEvent() {
                       required: "Kategori wajib dipilih",
                     })}
                     className={`${inputCls} appearance-none`}
+                    disabled={isCategoriesLoading || !!categoriesError}
                   >
-                    <option value="">Pilih kategori…</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
+                    <option value="">
+                      {isCategoriesLoading
+                        ? "Memuat kategori..."
+                        : categoriesError
+                          ? "Gagal memuat kategori"
+                          : "Pilih kategori…"}
+                    </option>
+
+                    {!isCategoriesLoading &&
+                      !categoriesError &&
+                      categories.map((cat: any) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
                   </select>
                 </Field>
 
