@@ -2,7 +2,6 @@
 
 import { User as UserType } from "@/app/types/userType";
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -91,7 +90,7 @@ function sampleBgIsDark(headerEl: HTMLElement | null): boolean {
 
 export default function Headers() {
   const router = useRouter();
-  const { auth, logout } = useAuth(); // Ambil data user dari AuthContext
+  const { auth, logout } = useAuth();
 
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -101,7 +100,6 @@ export default function Headers() {
   const headerRef = useRef<HTMLElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  // Convert auth data to UserType format
   const user: UserType | null = auth?.user
     ? {
         id: String(auth.user.id),
@@ -120,17 +118,11 @@ export default function Headers() {
 
   const handleLogout = async () => {
     try {
-      // Panggil API logout jika ada (opsional)
-      // await api.post('/auth/logout');
-
-      // Hapus token dari context dan localStorage
       logout();
 
-      // Tutup dropdown dan drawer
       setProfileOpen(false);
       setDrawerOpen(false);
 
-      // Redirect ke halaman login
       router.push("/login");
     } catch (error) {
       console.error("Logout error:", error);

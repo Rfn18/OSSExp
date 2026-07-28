@@ -49,7 +49,6 @@ interface PaginationMeta {
   to: number;
 }
 
-// ─── Custom Hooks ──────────────────────────────────────────────────────────
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
   useEffect(() => {
@@ -65,7 +64,6 @@ const paginatedFetcher = async (url: string) => {
   const result = response.data;
   return {
     data: result.data ?? [],
-    meta: result.meta ?? null,
   };
 };
 
@@ -144,18 +142,19 @@ export default function EventManagement() {
     paginatedFetcher,
   );
 
-  const { data: categories = [] } = useSWR<Category[]>(
+  const { data: categoriesResponse = [] } = useSWR<Category[]>(
     isAuthenticated ? "/event-categories" : null,
     simpleFetcher,
   );
 
-  const { data: users = [] } = useSWR<User[]>(
+  const { data: userResponse = [] } = useSWR<User[]>(
     isAuthenticated && isAdmin ? "/users" : null,
     simpleFetcher,
   );
 
   const events: EventFormValues[] = eventsResponse?.data?.data ?? [];
-  const meta: PaginationMeta | null = eventsResponse?.meta ?? null;
+  const categories: Category[] = categoriesResponse?.data ?? [];
+  const users: User[] = userResponse?.data ?? [];
 
   const imageUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUD_NAME}/image/upload/`;
 
@@ -195,11 +194,25 @@ export default function EventManagement() {
     setIsFilterOpen(true);
   };
 
+  const getPaginationInfo = () => {
+    const totalPages = eventsResponse?.data?.last_page || 0;
+    const currentPage = eventsResponse?.data?.current_page || 1;
+    const from = eventsResponse?.data?.from || 0;
+    const to = eventsResponse?.data?.to || 0;
+    const totalData = eventsResponse?.data?.total || 0;
+
+    return { totalPages, currentPage, from, to, totalData };
+  };
+
+  const paginationInfo = getPaginationInfo();
+  console.log(categories);
+  console.log(users);
+
   const paginationNumbers = useMemo(() => {
-    if (!meta) return [];
+    if (paginationInfo.totalPages === 0) return [];
     const pages: (number | "ellipsis")[] = [];
-    const current = meta.current_page;
-    const total = meta.last_page;
+    const current = paginationInfo.currentPage;
+    const total = paginationInfo.totalPages;
 
     if (total <= 7) {
       for (let i = 1; i <= total; i++) pages.push(i);
@@ -215,7 +228,7 @@ export default function EventManagement() {
       pages.push(total);
     }
     return pages;
-  }, [meta]);
+  }, [paginationInfo]);
 
   return (
     <>
@@ -242,7 +255,9 @@ export default function EventManagement() {
           {isEventsLoading ? (
             <Loader2 size={14} className="animate-spin text-primary-blue" />
           ) : (
-            <span className="text-primary-blue">{meta?.total ?? 0}</span>
+            <span className="text-primary-blue">
+              {paginationInfo.totalData ?? 0}
+            </span>
           )}
           <span>Event Ditemukan</span>
         </p>
@@ -342,7 +357,7 @@ export default function EventManagement() {
       {/* ─── Events Grid ────────────────────────────────────────────────── */}
       {!isEventsLoading && !eventsError && events.length > 0 && (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-4">
             {events.map((event) => (
               <CardEvent
                 key={event.id}
@@ -357,18 +372,20 @@ export default function EventManagement() {
           </div>
 
           {/* ─── Pagination ─────────────────────────────────────────────── */}
-          {meta && meta.last_page > 1 && (
+          {paginationInfo.totalPages > 1 && (
             <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-border">
               <p className="w-full text-sm text-muted-foreground text-center sm:text-left">
                 Menampilkan{" "}
                 <span className="font-semibold text-foreground">
-                  {meta.from}
+                  {paginationInfo.from}
                 </span>{" "}
                 –{" "}
-                <span className="font-semibold text-foreground">{meta.to}</span>{" "}
+                <span className="font-semibold text-foreground">
+                  {paginationInfo.to}
+                </span>{" "}
                 dari{" "}
                 <span className="font-semibold text-foreground">
-                  {meta.total}
+                  {paginationInfo.totalData}
                 </span>{" "}
                 event
               </p>
@@ -380,11 +397,11 @@ export default function EventManagement() {
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (meta.current_page > 1)
-                          setCurrentPage(meta.current_page - 1);
+                        if (paginationInfo.currentPage > 1)
+                          setCurrentPage(paginationInfo.currentPage - 1);
                       }}
                       className={`rounded-xl h-9 px-3 text-sm ${
-                        meta.current_page === 1
+                        paginationInfo.currentPage === 1
                           ? "pointer-events-none opacity-50"
                           : ""
                       }`}
@@ -404,7 +421,7 @@ export default function EventManagement() {
                             e.preventDefault();
                             setCurrentPage(page as number);
                           }}
-                          isActive={page === meta.current_page}
+                          isActive={page === paginationInfo.currentPage}
                           className="rounded-xl h-9 w-9 text-sm"
                         >
                           {page}
@@ -418,11 +435,13 @@ export default function EventManagement() {
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (meta.current_page < meta.last_page)
-                          setCurrentPage(meta.current_page + 1);
+                        if (
+                          paginationInfo.currentPage < paginationInfo.totalPages
+                        )
+                          setCurrentPage(paginationInfo.currentPage + 1);
                       }}
                       className={`rounded-xl h-9 px-3 text-sm ${
-                        meta.current_page === meta.last_page
+                        paginationInfo.currentPage === paginationInfo.totalPages
                           ? "pointer-events-none opacity-50"
                           : ""
                       }`}
@@ -495,7 +514,7 @@ export default function EventManagement() {
                     <SelectContent>
                       <SelectGroup>
                         <SelectItem value="all">Semua</SelectItem>
-                        {categories.map((cat) => (
+                        {categories?.map((cat) => (
                           <SelectItem key={cat.id} value={String(cat.id)}>
                             {cat.name}
                           </SelectItem>
@@ -520,7 +539,7 @@ export default function EventManagement() {
                     <SelectContent>
                       <SelectGroup>
                         <SelectItem value="all">Semua User</SelectItem>
-                        {users.map((u) => (
+                        {users?.map((u) => (
                           <SelectItem key={u.id} value={String(u.id)}>
                             {u.name}
                           </SelectItem>

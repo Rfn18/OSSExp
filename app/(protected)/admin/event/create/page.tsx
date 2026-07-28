@@ -18,6 +18,7 @@ import {
 import { EventFormValues } from "@/app/types/eventType";
 import api from "@/app/services/api";
 import useSWR from "swr";
+import { useRouter } from "next/navigation";
 
 type NotificationType = "success" | "error" | null;
 
@@ -147,6 +148,7 @@ export default function CreateEvent() {
   const [notification, setNotification] = useState<Notification | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  const router = useRouter();
   const fetcher = (url: string) => api.get(url).then((res) => res.data);
 
   const {
@@ -219,6 +221,8 @@ export default function CreateEvent() {
         type: "success",
         message: "Event berhasil ditambahkan ke sistem.",
       });
+
+      router.push("/admin/event");
 
       reset();
       setCoverPreview(null);
@@ -401,7 +405,6 @@ export default function CreateEvent() {
               </div>
             </SectionCard>
 
-            {/* 3 · Detail & Pengaturan */}
             <SectionCard title="Detail & Pengaturan" step={3}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Field
@@ -436,10 +439,10 @@ export default function CreateEvent() {
                   label="Kategori Event"
                   required
                   icon={<Tag className="w-4 h-4" />}
-                  error={errors.event_category_id?.message}
+                  error={errors.category?.message}
                 >
                   <select
-                    {...register("event_category_id", {
+                    {...register("category", {
                       required: "Kategori wajib dipilih",
                     })}
                     className={`${inputCls} appearance-none`}

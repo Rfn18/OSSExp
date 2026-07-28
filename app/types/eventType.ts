@@ -20,5 +20,5 @@ export interface EventFormValues {
 export interface Category {
   id: string;
   name: string;
-  description: string;
+  description?: string;
 }

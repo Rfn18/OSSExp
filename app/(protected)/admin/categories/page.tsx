@@ -13,15 +13,9 @@ import {
 } from "lucide-react";
 import { DashboardHeader } from "@/components/admin/dashboardHeader";
 import { Button } from "@/components/ui/button";
+import { type Category } from "@/app/types/eventType";
 
-// --- Types ---
 type CategoryType = "event" | "doc";
-
-type Category = {
-  id: string;
-  name: string;
-  description?: string;
-};
 
 type ModalMode = "add" | "edit" | null;
 
@@ -29,7 +23,6 @@ export default function CategoriesPage() {
   const [activeTab, setActiveTab] = useState<CategoryType>("event");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Mock Data
   const [eventCategories, setEventCategories] = useState<Category[]>([
     {
       id: "e1",
@@ -73,14 +66,12 @@ export default function CategoriesPage() {
     },
   ]);
 
-  // Modal state
   const [modalMode, setModalMode] = useState<ModalMode>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(
     null,
   );
 
-  // Form state
   const [formName, setFormName] = useState("");
   const [formDescription, setFormDescription] = useState("");
 
@@ -93,7 +84,6 @@ export default function CategoriesPage() {
     c.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  // --- Handlers ---
   const openAddModal = () => {
     setEditingCategory(null);
     setFormName("");
