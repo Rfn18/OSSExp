@@ -1,146 +1,101 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Plus,
-  Pencil,
-  Trash2,
-  X,
-  Tag,
-  FolderKanban,
-  AlertTriangle,
-  Search,
-} from "lucide-react";
+import { Plus, Pencil, Trash2, Tag, FolderKanban, Search } from "lucide-react";
 import { DashboardHeader } from "@/components/admin/dashboardHeader";
 import { Button } from "@/components/ui/button";
 import { type Category } from "@/app/types/eventType";
+import useSWR, { mutate } from "swr";
+import api from "@/app/services/api";
+import CategoryFormModal, {
+  type CategoryFormValues,
+} from "@/components/shared/CategoryFormModal";
+import ConfirmDialog from "@/components/shared/ConfirmDialog";
 
 type CategoryType = "event" | "doc";
-
 type ModalMode = "add" | "edit" | null;
+
+const ENDPOINT: Record<CategoryType, string> = {
+  event: "/event-category",
+  doc: "/doc-category",
+};
+
+function extractList(raw: any): Category[] {
+  return raw?.data?.data ?? raw?.data ?? raw ?? [];
+}
+
+const fetcher = (url: string) => api.get(url).then((res) => res.data);
 
 export default function CategoriesPage() {
   const [activeTab, setActiveTab] = useState<CategoryType>("event");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [eventCategories, setEventCategories] = useState<Category[]>([
-    {
-      id: "e1",
-      name: "Sosial",
-      description: "Kegiatan bertema sosial dan kepedulian",
-    },
-    {
-      id: "e2",
-      name: "Olahraga",
-      description: "Kegiatan yang berkaitan dengan aktivitas fisik",
-    },
-    { id: "e3", name: "Akademik", description: "" },
-    {
-      id: "e4",
-      name: "Keagamaan",
-      description: "Peringatan hari besar dan kegiatan rohani",
-    },
-  ]);
-
-  const [docCategories, setDocCategories] = useState<Category[]>([
-    {
-      id: "d1",
-      name: "Apel Pembukaan",
-      description: "Dokumentasi upacara pembukaan resmi",
-    },
-    {
-      id: "d2",
-      name: "Sambutan",
-      description: "Sesi sambutan dari pihak penyelenggara",
-    },
-    {
-      id: "d3",
-      name: "Pembagian Hadiah",
-      description: "Pemberian penghargaan kepada peserta",
-    },
-    { id: "d4", name: "Penutupan", description: "" },
-    {
-      id: "d5",
-      name: "Sesi Foto Bersama",
-      description: "Dokumentasi foto seluruh peserta",
-    },
-  ]);
+  const endpoint = ENDPOINT[activeTab];
+  const { data: raw, isLoading, error } = useSWR(endpoint, fetcher);
+  const categories = extractList(raw);
 
   const [modalMode, setModalMode] = useState<ModalMode>(null);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(
     null,
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const [formName, setFormName] = useState("");
-  const [formDescription, setFormDescription] = useState("");
-
-  const activeCategories =
-    activeTab === "event" ? eventCategories : docCategories;
-  const setActiveCategories =
-    activeTab === "event" ? setEventCategories : setDocCategories;
-
-  const filteredCategories = activeCategories.filter((c) =>
+  const filteredCategories = categories.filter((c) =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const openAddModal = () => {
     setEditingCategory(null);
-    setFormName("");
-    setFormDescription("");
     setModalMode("add");
   };
 
   const openEditModal = (category: Category) => {
     setEditingCategory(category);
-    setFormName(category.name);
-    setFormDescription(category.description || "");
     setModalMode("edit");
   };
 
   const closeModal = () => {
     setModalMode(null);
     setEditingCategory(null);
-    setFormName("");
-    setFormDescription("");
   };
 
-  const handleSubmit = () => {
-    if (!formName.trim()) return;
-
-    if (modalMode === "add") {
-      const newCategory: Category = {
-        id: `${activeTab}-${Date.now()}`,
-        name: formName.trim(),
-        description: formDescription.trim() || undefined,
-      };
-      setActiveCategories((prev) => [...prev, newCategory]);
-    } else if (modalMode === "edit" && editingCategory) {
-      setActiveCategories((prev) =>
-        prev.map((c) =>
-          c.id === editingCategory.id
-            ? {
-                ...c,
-                name: formName.trim(),
-                description: formDescription.trim() || undefined,
-              }
-            : c,
-        ),
-      );
+  const handleSubmit = async (values: CategoryFormValues) => {
+    setIsSubmitting(true);
+    try {
+      if (modalMode === "add") {
+        await api.post(endpoint, {
+          name: values.name,
+          description: values.description || null,
+        });
+      } else if (modalMode === "edit" && editingCategory) {
+        await api.put(`${endpoint}/${editingCategory.id}`, {
+          name: values.name,
+          description: values.description || null,
+        });
+      }
+      mutate(endpoint);
+      closeModal();
+    } catch (error: any) {
+      alert(error.response?.data?.message ?? "Gagal menyimpan kategori.");
+    } finally {
+      setIsSubmitting(false);
     }
-    closeModal();
   };
 
-  const confirmDelete = (category: Category) => {
-    setDeletingCategory(category);
-  };
-
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!deletingCategory) return;
-    setActiveCategories((prev) =>
-      prev.filter((c) => c.id !== deletingCategory.id),
-    );
-    setDeletingCategory(null);
+    setIsDeleting(true);
+    try {
+      await api.delete(`${endpoint}/${deletingCategory.id}`);
+      mutate(endpoint);
+      setDeletingCategory(null);
+    } catch (error: any) {
+      alert(error.response?.data?.message ?? "Gagal menghapus kategori.");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -163,8 +118,7 @@ export default function CategoriesPage() {
 
       {/* Tabs + Search */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        {/* Segmented Tab */}
-        <div className=" relative flex items-center bg-gray-100 rounded-xl p-1 w-full sm:w-[550px]">
+        <div className="relative flex items-center bg-gray-100 rounded-xl p-1 w-full sm:w-[550px]">
           <div
             className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white rounded-lg shadow-sm transition-transform duration-200 ease-out ${
               activeTab === "doc"
@@ -190,7 +144,6 @@ export default function CategoriesPage() {
           </button>
         </div>
 
-        {/* Search */}
         <div className="relative w-full sm:w-64">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
@@ -203,14 +156,21 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      {/* Category count */}
       <p className="text-xs font-medium text-gray-400 mb-4">
         {filteredCategories.length} kategori{" "}
         {activeTab === "event" ? "event" : "dokumentasi"}
       </p>
 
       {/* Category List */}
-      {filteredCategories.length > 0 ? (
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-16 text-sm text-gray-400">
+          Memuat kategori…
+        </div>
+      ) : error ? (
+        <div className="flex flex-col items-center justify-center py-16 text-sm text-red-500">
+          Gagal memuat data kategori.
+        </div>
+      ) : filteredCategories.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredCategories.map((category) => (
             <div
@@ -233,7 +193,6 @@ export default function CategoriesPage() {
                   </div>
                 </div>
 
-                {/* Action buttons — always visible per requirement */}
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <button
                     onClick={() => openEditModal(category)}
@@ -243,7 +202,7 @@ export default function CategoriesPage() {
                     <Pencil size={14} />
                   </button>
                   <button
-                    onClick={() => confirmDelete(category)}
+                    onClick={() => setDeletingCategory(category)}
                     className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 text-gray-500 hover:text-red-600 transition-colors"
                     title="Hapus kategori"
                   >
@@ -279,118 +238,36 @@ export default function CategoriesPage() {
         </div>
       )}
 
-      {/* Add/Edit Modal */}
-      {modalMode && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40" onClick={closeModal} />
-          <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-              <h3 className="text-base font-bold text-gray-900">
-                {modalMode === "add" ? "Tambah Kategori" : "Update Kategori"}
-              </h3>
-              <button
-                onClick={closeModal}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500"
-              >
-                <X size={16} />
-              </button>
-            </div>
+      <CategoryFormModal
+        open={modalMode !== null}
+        onOpenChange={(open) => !open && closeModal()}
+        mode={modalMode ?? "add"}
+        eyebrow={
+          activeTab === "event" ? "Event Category" : "Documentation Category"
+        }
+        descriptionRequired={activeTab === "doc"}
+        initialValues={
+          editingCategory
+            ? {
+                name: editingCategory.name,
+                description: editingCategory.description ?? "",
+              }
+            : undefined
+        }
+        isSubmitting={isSubmitting}
+        onSubmit={handleSubmit}
+      />
 
-            <div className="px-6 py-5 space-y-4">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                {activeTab === "event"
-                  ? "Event Category"
-                  : "Documentation Category"}
-              </p>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Nama Kategori <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
-                  placeholder="Contoh: Apel Pembukaan"
-                  autoFocus
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20 focus:border-[#1e3a8a]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Deskripsi{" "}
-                  <span className="text-gray-400 font-normal">(opsional)</span>
-                </label>
-                <textarea
-                  value={formDescription}
-                  onChange={(e) => setFormDescription(e.target.value)}
-                  placeholder="Tambahkan deskripsi singkat..."
-                  rows={3}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 resize-none focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20 focus:border-[#1e3a8a]"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-3 px-6 py-5 border-t border-gray-100">
-              <button
-                onClick={closeModal}
-                className="px-5 py-2.5 bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 text-sm font-semibold rounded-xl transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={!formName.trim()}
-                className="px-5 py-2.5 bg-[#1e3a8a] hover:bg-[#172e6e] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-xl shadow-sm transition-colors"
-              >
-                {modalMode === "add" ? "Tambah" : "Simpan"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {deletingCategory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setDeletingCategory(null)}
-          />
-          <div className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden">
-            <div className="px-6 pt-6 pb-2 flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mb-4">
-                <AlertTriangle size={20} className="text-red-500" />
-              </div>
-              <h3 className="text-base font-bold text-gray-900 mb-1">
-                Hapus Kategori?
-              </h3>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                Kategori{" "}
-                <span className="font-semibold text-gray-700">
-                  "{deletingCategory.name}"
-                </span>{" "}
-                akan dihapus permanen dan tidak dapat dikembalikan.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 px-6 py-5 mt-2">
-              <button
-                onClick={() => setDeletingCategory(null)}
-                className="flex-1 px-5 py-2.5 bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 text-sm font-semibold rounded-xl transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                onClick={handleDelete}
-                className="flex-1 px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors"
-              >
-                Ya, Hapus
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={deletingCategory !== null}
+        onOpenChange={(open) => !open && setDeletingCategory(null)}
+        title="Hapus Kategori?"
+        description={`Kategori "${deletingCategory?.name}" akan dihapus permanen dan tidak dapat dikembalikan.`}
+        confirmLabel="Ya, Hapus"
+        variant="destructive"
+        isLoading={isDeleting}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }
