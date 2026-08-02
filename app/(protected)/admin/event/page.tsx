@@ -37,17 +37,10 @@ import { useRouter } from "next/navigation";
 import { DashboardHeader } from "@/components/admin/dashboardHeader";
 import api from "@/app/services/api";
 import { useAuth } from "@/app/context/AuthContext";
-import { Category, EventFormValues } from "@/app/types/eventType";
+import { Category, Event, EventFormValues } from "@/app/types/eventType";
 import { User } from "@/app/types/userType";
-
-interface PaginationMeta {
-  current_page: number;
-  last_page: number;
-  per_page: number;
-  total: number;
-  from: number;
-  to: number;
-}
+import axios from "axios";
+import { toast } from "sonner";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -58,7 +51,6 @@ function useDebounce<T>(value: T, delay: number): T {
   return debounced;
 }
 
-// Fetcher yang return data + meta (khusus untuk pagination)
 const paginatedFetcher = async (url: string) => {
   const response = await api.get(url);
   const result = response.data;
@@ -70,7 +62,6 @@ const paginatedFetcher = async (url: string) => {
 const simpleFetcher = (url: string) =>
   api.get(url).then((res) => res.data.data ?? []);
 
-// ─── Helper ────────────────────────────────────────────────────────────────
 function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString("id-ID", {
     day: "numeric",
@@ -88,14 +79,12 @@ export default function EventManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const perPage = 8;
 
-  // Filter states
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [sortFilter, setSortFilter] = useState<string>("all");
   const [userFilter, setUserFilter] = useState<string>("all");
 
-  // Draft filter (diapply saat user klik "Terapkan")
   const [draftStatus, setDraftStatus] = useState(statusFilter);
   const [draftCategory, setDraftCategory] = useState(categoryFilter);
   const [draftSort, setDraftSort] = useState(sortFilter);
@@ -152,7 +141,7 @@ export default function EventManagement() {
     simpleFetcher,
   );
 
-  const events: EventFormValues[] = eventsResponse?.data?.data ?? [];
+  const events: Event[] = eventsResponse?.data?.data ?? [];
   const categories: Category[] = categoriesResponse?.data ?? [];
   const users: User[] = userResponse?.data ?? [];
 
@@ -205,8 +194,6 @@ export default function EventManagement() {
   };
 
   const paginationInfo = getPaginationInfo();
-  console.log(categories);
-  console.log(users);
 
   const paginationNumbers = useMemo(() => {
     if (paginationInfo.totalPages === 0) return [];
@@ -229,6 +216,19 @@ export default function EventManagement() {
     }
     return pages;
   }, [paginationInfo]);
+
+  const handleDeleteEvent = async (slug: string) => {
+    try {
+      await api.delete(`/events/${slug}`);
+      mutateEvents();
+      toast.success("Event berhasil dihapus");
+    } catch (error) {
+      toast.error("Event gagal dihapus");
+    }
+  };
+  const handleEditEvent = (slug: string) => {
+    router.push(`/admin/event/${slug}/edit`);
+  };
 
   return (
     <>
@@ -292,7 +292,6 @@ export default function EventManagement() {
         </div>
       </div>
 
-      {/* ─── Loading State ──────────────────────────────────────────────── */}
       {isEventsLoading && events.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20">
           <Loader2 className="w-10 h-10 animate-spin text-primary-blue mb-4" />
@@ -300,7 +299,6 @@ export default function EventManagement() {
         </div>
       )}
 
-      {/* ─── Error State ────────────────────────────────────────────────── */}
       {eventsError && !isEventsLoading && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mb-4">
@@ -323,7 +321,6 @@ export default function EventManagement() {
         </div>
       )}
 
-      {/* ─── Empty State ────────────────────────────────────────────────── */}
       {!isEventsLoading && !eventsError && events.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
@@ -366,7 +363,11 @@ export default function EventManagement() {
                 category={event.category?.name || "Tanpa Kategori"}
                 title={event.title}
                 description={event.description}
+                link={event.slug}
                 status={event.status}
+                modal={true}
+                onEdit={() => handleEditEvent(event.slug)}
+                onDelete={() => handleDeleteEvent(event.slug)}
               />
             ))}
           </div>

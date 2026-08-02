@@ -11,11 +11,11 @@ export function SWRProvider({ children }: { children: ReactNode }) {
     <SWRConfig
       value={{
         fetcher,
-        revalidateOnFocus: false,      // Jangan refetch saat user kembali ke tab
-        revalidateOnReconnect: true,   // Refetch saat koneksi internet pulih
-        dedupingInterval: 2000,        // Cegah request duplikat dalam 2 detik
-        errorRetryCount: 3,            // Retry maksimal 3x jika error
-        errorRetryInterval: 2000,      // Jeda 2 detik sebelum retry
+        revalidateOnFocus: false,      
+        revalidateOnReconnect: true,   
+        dedupingInterval: 2000,        
+        errorRetryCount: 3,            
+        errorRetryInterval: 2000,      
       }}
     >
       {children}

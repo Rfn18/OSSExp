@@ -4,7 +4,16 @@ import { Button } from "@/components/ui/button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogleDrive } from "@fortawesome/free-brands-svg-icons";
 import { faCalendar } from "@fortawesome/free-regular-svg-icons";
-import { Calendar, Clock, MapPin, MoveLeft, MoveRight, Radio, Tag, Timer } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  MoveLeft,
+  MoveRight,
+  Radio,
+  Tag,
+  Timer,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function EventDetail({
@@ -28,7 +37,7 @@ export default function EventDetail({
         {icon}
       </div>
       <div className="flex flex-col gap-0.5">
-        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <p className="text-xs font-semibold tracking-wider text-muted-foreground">
           {title}
         </p>
         <p className="text-sm font-medium text-foreground">{description}</p>
@@ -145,7 +154,7 @@ export default function EventDetail({
                     title="Tanggal"
                     description="10 Agustus 2025"
                   />
-                    <ItemCard
+                  <ItemCard
                     icon={<Calendar className="h-5 w-5" />}
                     title="Tanggal"
                     description="17–19 Mei 2026"

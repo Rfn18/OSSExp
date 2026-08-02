@@ -157,7 +157,7 @@ export default function CreateEvent() {
     error: categoriesError,
   } = useSWR("/event-categories", fetcher);
 
-  const categories = categoriesResponse?.data?.data || categoriesResponse || [];
+  const categories = categoriesResponse?.data?.data;
 
   const {
     register,
@@ -215,6 +215,7 @@ export default function CreateEvent() {
       if (coverImage) {
         formData.append("cover_image", coverImage);
       }
+
       await api.post("/events", formData);
 
       setNotification({
@@ -439,10 +440,10 @@ export default function CreateEvent() {
                   label="Kategori Event"
                   required
                   icon={<Tag className="w-4 h-4" />}
-                  error={errors.category?.message}
+                  error={errors.event_category_id?.message}
                 >
                   <select
-                    {...register("category", {
+                    {...register("event_category_id", {
                       required: "Kategori wajib dipilih",
                     })}
                     className={`${inputCls} appearance-none`}
@@ -458,7 +459,7 @@ export default function CreateEvent() {
 
                     {!isCategoriesLoading &&
                       !categoriesError &&
-                      categories.map((cat: any) => (
+                      categories?.map((cat: any) => (
                         <option key={cat.id} value={cat.id}>
                           {cat.name}
                         </option>

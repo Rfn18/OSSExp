@@ -15,21 +15,10 @@ import {
   Tag,
   Activity,
 } from "lucide-react";
-
-interface EventFormValues {
-  title: string;
-  slug: string;
-  description: string;
-  location: string;
-  start_date: string;
-  end_date: string;
-  start_time: string;
-  end_time: string;
-  link: string;
-  status: "upcoming" | "ongoing" | "completed" | "cancelled";
-  is_repeat: boolean;
-  event_category_id: string;
-}
+import { EventFormValues } from "@/app/types/eventType";
+import api from "@/app/services/api";
+import useSWR from "swr";
+import { useRouter } from "next/navigation";
 
 type NotificationType = "success" | "error" | null;
 
@@ -38,7 +27,49 @@ interface Notification {
   message: string;
 }
 
-// ─── Notification Toast ───────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────
+function toDateInput(value?: string | null) {
+  if (!value) return "";
+  return value.split("T")[0].split(" ")[0];
+}
+
+function toTimeInput(value?: string | null) {
+  if (!value) return "";
+  return value.slice(0, 5);
+}
+
+function extractEvent(raw: any) {
+  return raw?.data?.data ?? raw?.data ?? raw ?? null;
+}
+
+function resolveCoverUrl(coverImage?: string | null) {
+  if (!coverImage) return null;
+  if (coverImage.startsWith("http")) return coverImage;
+
+  const cloudBase = process.env.NEXT_PUBLIC_CLOUDINARY_BASE_URL ?? "";
+  return cloudBase ? `${cloudBase}/${coverImage}` : coverImage;
+}
+
+// Mapping response event -> shape yang dipakai react-hook-form
+function mapEventToFormValues(event: any): EventFormValues {
+  return {
+    title: event.title ?? "",
+    slug: event.slug ?? "",
+    description: event.description ?? "",
+    location: event.location ?? "",
+    start_date: toDateInput(event.start_date),
+    end_date: toDateInput(event.end_date),
+    start_time: toTimeInput(event.start_time),
+    end_time: toTimeInput(event.end_time),
+    link: event.link ?? "",
+    status: event.status ?? "upcoming",
+    is_repeat: !!event.is_repeat,
+    event_category_id: event.event_category_id
+      ? String(event.event_category_id)
+      : "",
+  };
+}
+
 function Toast({
   notification,
   onClose,
@@ -86,7 +117,6 @@ function Toast({
   );
 }
 
-// ─── Field Wrapper ────────────────────────────────────────────────────────────
 function Field({
   label,
   required,
@@ -121,7 +151,6 @@ function Field({
   );
 }
 
-// ─── Input Classes ────────────────────────────────────────────────────────────
 const inputCls =
   "w-full px-3.5 py-2.5 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-400 " +
   "focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500 " +
@@ -131,7 +160,6 @@ const readonlyCls =
   "w-full px-3.5 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-500 " +
   "focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-400 transition duration-150";
 
-// ─── Section Card ─────────────────────────────────────────────────────────────
 function SectionCard({
   title,
   step,
@@ -159,12 +187,32 @@ function SectionCard({
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
-export default function EditEvent() {
+export default function EditEvent({ slug }: { slug: string }) {
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  const router = useRouter();
+  const imageUrl = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUD_NAME}/image/upload/`;
+
+  const fetcher = (url: string) => api.get(url).then((res) => res.data);
+
+  const {
+    data: eventRaw,
+    isLoading: isEventLoading,
+    error: eventError,
+  } = useSWR(slug ? `/events/${slug}` : null, fetcher);
+
+  const event = extractEvent(eventRaw);
+
+  const {
+    data: categoriesResponse,
+    isLoading: isCategoriesLoading,
+    error: categoriesError,
+  } = useSWR("/event-categories", fetcher);
+
+  const categories = categoriesResponse?.data?.data;
 
   const {
     register,
@@ -176,22 +224,23 @@ export default function EditEvent() {
     defaultValues: { status: "upcoming", is_repeat: false },
   });
 
-  const categories = [
-    { id: "1", name: "Conference" },
-    { id: "2", name: "Webinar" },
-    { id: "3", name: "Workshop" },
-    { id: "4", name: "Meetup" },
-    { id: "5", name: "Festival" },
-  ];
+  useEffect(() => {
+    if (!event || !categories) return;
+
+    reset(mapEventToFormValues(event));
+
+    const resolvedCover = resolveCoverUrl(event.cover_image);
+    if (resolvedCover) setCoverPreview(resolvedCover);
+  }, [event, categories, reset]);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const title = e.target.value;
     setValue("title", title);
-    const slug = title
+    const slugified = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)+/g, "");
-    setValue("slug", slug, { shouldValidate: true });
+    setValue("slug", slugified, { shouldValidate: true });
   };
 
   const applyFile = (file: File) => {
@@ -215,44 +264,65 @@ export default function EditEvent() {
 
   const onSubmit = async (data: EventFormValues) => {
     try {
-      // Simulate API call
-      await new Promise<void>((resolve, reject) =>
-        setTimeout(() => {
-          // Simulate random success/failure for demo
-          Math.random() > 0.3 ? resolve() : reject(new Error("Server error"));
-        }, 1200),
-      );
+      const formData = new FormData();
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+        formData.append(
+          key,
+          key === "is_repeat" ? (value ? "1" : "0") : String(value),
+        );
+      });
+
+      if (coverImage) {
+        formData.append("cover_image", coverImage);
+      }
+
+      // Method spoofing — Laravel gak bisa parse multipart/form-data di method PUT langsung
+      formData.append("_method", "PUT");
+
+      await api.post(`/events/${slug}`, formData);
+
       setNotification({
         type: "success",
-        message: "Event berhasil ditambahkan ke sistem.",
+        message: "Event berhasil diperbarui.",
       });
-      reset();
-      setCoverPreview(null);
-      setCoverImage(null);
-    } catch {
+      router.push("/admin/event");
+    } catch (error: any) {
       setNotification({
         type: "error",
-        message: "Gagal menyimpan event. Periksa koneksi dan coba lagi.",
+        message:
+          error.response?.data?.message ??
+          "Gagal menyimpan perubahan. Periksa koneksi dan coba lagi.",
       });
     }
   };
 
   const statusOptions = [
-    { value: "upcoming", label: "Upcoming", color: "text-blue-600" },
-    { value: "ongoing", label: "Ongoing", color: "text-amber-600" },
-    { value: "completed", label: "Completed", color: "text-emerald-600" },
-    { value: "cancelled", label: "Cancelled", color: "text-red-600" },
+    { value: "upcoming", label: "Upcoming" },
+    { value: "ongoing", label: "Ongoing" },
+    { value: "completed", label: "Completed" },
+    { value: "cancelled", label: "Cancelled" },
   ];
+
+  if (isEventLoading) {
+    return (
+      <div className="flex items-center justify-center py-24 text-sm text-gray-400">
+        Memuat data event…
+      </div>
+    );
+  }
+
+  if (eventError || !event) {
+    return (
+      <div className="flex items-center justify-center py-24 text-sm text-red-500">
+        Event dengan slug &quot;{slug}&quot; tidak ditemukan.
+      </div>
+    );
+  }
 
   return (
     <>
-      <style>{`
-        @keyframes slideIn {
-          from { opacity: 0; transform: translateX(1rem); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-      `}</style>
-
       {notification && (
         <Toast
           notification={notification}
@@ -261,7 +331,7 @@ export default function EditEvent() {
       )}
 
       <div className="font-sans text-gray-900">
-        <div className=" mx-auto">
+        <div className="mx-auto">
           <div className="mb-8">
             <h1 className="text-xl font-bold text-gray-900 tracking-tight">
               Edit Event
@@ -324,7 +394,6 @@ export default function EditEvent() {
               </div>
             </SectionCard>
 
-            {/* 2 · Waktu Pelaksanaan */}
             <SectionCard
               title="Waktu Pelaksanaan"
               step={2}
@@ -410,7 +479,6 @@ export default function EditEvent() {
               </div>
             </SectionCard>
 
-            {/* 3 · Detail & Pengaturan */}
             <SectionCard title="Detail & Pengaturan" step={3}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <Field
@@ -452,13 +520,22 @@ export default function EditEvent() {
                       required: "Kategori wajib dipilih",
                     })}
                     className={`${inputCls} appearance-none`}
+                    disabled={isCategoriesLoading || !!categoriesError}
                   >
-                    <option value="">Pilih kategori…</option>
-                    {categories.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.name}
-                      </option>
-                    ))}
+                    <option value="">
+                      {isCategoriesLoading
+                        ? "Memuat kategori..."
+                        : categoriesError
+                          ? "Gagal memuat kategori"
+                          : "Pilih kategori…"}
+                    </option>
+                    {!isCategoriesLoading &&
+                      !categoriesError &&
+                      categories?.map((cat: any) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
                   </select>
                 </Field>
 
@@ -481,9 +558,8 @@ export default function EditEvent() {
               </div>
             </SectionCard>
 
-            {/* 4 · Media */}
             <SectionCard title="Media" step={4}>
-              <Field label="Cover Image" required>
+              <Field label="Cover Image">
                 <div
                   onDragOver={(e) => {
                     e.preventDefault();
@@ -492,11 +568,7 @@ export default function EditEvent() {
                   onDragLeave={() => setIsDragging(false)}
                   onDrop={handleDrop}
                   className={`relative flex justify-center items-center rounded-xl border-2 border-dashed transition-all duration-200
-                    ${
-                      isDragging
-                        ? "border-blue-400 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                    }
+                    ${isDragging ? "border-blue-400 bg-blue-50" : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"}
                     ${coverPreview ? "p-0 overflow-hidden" : "px-6 py-12"}
                     group cursor-pointer`}
                 >
@@ -504,7 +576,7 @@ export default function EditEvent() {
                     <>
                       <div className="relative w-full aspect-video rounded-xl overflow-hidden">
                         <img
-                          src={coverPreview}
+                          src={`${imageUrl}${coverPreview}`}
                           alt="Preview"
                           className="w-full h-full object-cover"
                         />
@@ -552,7 +624,6 @@ export default function EditEvent() {
               </Field>
             </SectionCard>
 
-            {/* Form Actions */}
             <div className="flex items-center justify-between gap-3 pt-2 pb-6">
               <p className="text-xs text-gray-400">
                 <span className="text-red-500">*</span> Wajib diisi
@@ -560,25 +631,15 @@ export default function EditEvent() {
               <div className="flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => {
-                    reset();
-                    setCoverPreview(null);
-                    setCoverImage(null);
-                  }}
-                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-600 bg-white border border-gray-200
-                    hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-200
-                    transition-all duration-150"
+                  onClick={() => router.back()}
+                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-150"
                 >
-                  Reset
+                  Batal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600
-                    hover:bg-blue-700 active:bg-blue-800
-                    focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500
-                    disabled:opacity-60 disabled:cursor-not-allowed
-                    transition-all duration-150 flex items-center gap-2 shadow-sm shadow-blue-200"
+                  className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-150 flex items-center gap-2 shadow-sm shadow-blue-200"
                 >
                   {isSubmitting ? (
                     <>
@@ -607,7 +668,7 @@ export default function EditEvent() {
                   ) : (
                     <>
                       <CheckCircle2 className="w-4 h-4" />
-                      Simpan Event
+                      Simpan Perubahan
                     </>
                   )}
                 </button>
